@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\Git\\remote-control\\Server\\Server.csproj": {}
+    "D:\\Git\\remote-control\\Server\\Server.csproj": {}
   },
   "projects": {
-    "d:\\Git\\remote-control\\Server\\Server.csproj": {
+    "D:\\Git\\remote-control\\Server\\Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\Git\\remote-control\\Server\\Server.csproj",
+        "projectUniqueName": "D:\\Git\\remote-control\\Server\\Server.csproj",
         "projectName": "Server",
-        "projectPath": "d:\\Git\\remote-control\\Server\\Server.csproj",
+        "projectPath": "D:\\Git\\remote-control\\Server\\Server.csproj",
         "packagesPath": "C:\\Users\\dobiko\\.nuget\\packages\\",
-        "outputPath": "d:\\Git\\remote-control\\Server\\obj\\",
+        "outputPath": "D:\\Git\\remote-control\\Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

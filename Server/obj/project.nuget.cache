@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3sQJ/1VhyHVN6OfbkKgrEQIWSsQwGArtZjCIVZhTw0y/6UEEJVXcEBUmPmvkt+56WC5G+NXKJH6gw7mlXtJA2A==",
+  "dgSpecHash": "ms2V4p5/bpYmLDEmAU2ArmVBLWhfujSEReI58KnJo/xFjiRAKr2dfstCstInySgdBX2LQhLthZ2wfPhypgcmEw==",
   "success": true,
-  "projectFilePath": "d:\\Git\\remote-control\\Server\\Server.csproj",
+  "projectFilePath": "D:\\Git\\remote-control\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dobiko\\.nuget\\packages\\log4net\\3.0.2\\log4net.3.0.2.nupkg.sha512",
     "C:\\Users\\dobiko\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",
