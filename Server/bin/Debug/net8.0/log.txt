@@ -1,0 +1,205 @@
+2025-08-10 21:23:49,862 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:24:30,183 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:25:48,371 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:26:10,833 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:26:11,050 INFO Server.Configuration - GET /swagger - ORIGIN:  - {  }
+2025-08-10 21:26:11,062 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:26:11,131 INFO Server.Configuration - GET /swagger/swagger-ui-standalone-preset.js - ORIGIN:  - {  }
+2025-08-10 21:26:11,132 INFO Server.Configuration - GET /swagger/index.css - ORIGIN:  - {  }
+2025-08-10 21:26:11,132 INFO Server.Configuration - GET /swagger/swagger-ui.css - ORIGIN:  - {  }
+2025-08-10 21:26:11,131 INFO Server.Configuration - GET /swagger/swagger-ui-bundle.js - ORIGIN:  - {  }
+2025-08-10 21:26:11,267 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:26:11,324 INFO Server.Configuration - GET /swagger/favicon-32x32.png - ORIGIN:  - {  }
+2025-08-10 21:26:16,297 INFO Server.Configuration - GET /swagger/favicon-32x32.png - ORIGIN: chrome-extension://mpognobbkildjkofajifpdfhcoklimli - {  }
+2025-08-10 21:26:50,747 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:26:54,101 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 21:26:54,116 INFO Server.Configuration - GET /assets/index-UYYbSoYV.js - ORIGIN: http://localhost:5008 - {  }
+2025-08-10 21:26:54,116 INFO Server.Configuration - GET /assets/index-W-TSH6NB.css - ORIGIN: http://localhost:5008 - {  }
+2025-08-10 21:26:54,180 INFO Server.Configuration - GET /vite.svg - ORIGIN:  - {  }
+2025-08-10 21:26:55,780 INFO Server.Configuration - GET /vite.svg - ORIGIN: chrome-extension://mpognobbkildjkofajifpdfhcoklimli - {  }
+2025-08-10 21:39:28,626 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:39:28,869 INFO Server.Configuration - GET /swagger - ORIGIN:  - {  }
+2025-08-10 21:39:28,882 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:39:29,016 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:42:44,531 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:42:44,787 INFO Server.Configuration - GET /swagger - ORIGIN:  - {  }
+2025-08-10 21:42:44,801 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:42:44,935 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:43:10,553 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:43:10,783 INFO Server.Configuration - GET /swagger - ORIGIN:  - {  }
+2025-08-10 21:43:10,797 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:43:10,923 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:45:00,326 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:45:00,417 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:45:05,404 INFO Server.Configuration - GET /play - ORIGIN:  - {  }
+2025-08-10 21:45:07,440 INFO Server.Configuration - GET /play - ORIGIN:  - {  }
+2025-08-10 21:49:25,428 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:49:25,485 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:49:35,243 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:50:00,197 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:50:00,250 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:50:08,745 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:50:08,966 INFO Server.Configuration - GET /swagger - ORIGIN:  - {  }
+2025-08-10 21:50:08,979 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 21:50:09,097 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:50:13,811 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:53:37,496 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 21:59:05,948 INFO Server.Configuration - Launching in development mode!
+2025-08-10 21:59:10,187 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 21:59:11,105 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:06:12,587 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:06:13,286 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:07:55,518 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:07:56,161 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:07:58,918 INFO Server.Configuration - GET /previous - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:08:05,417 INFO Server.Configuration - GET /next - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:08:09,120 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:09:34,907 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:09:35,728 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:10:02,141 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:10:04,166 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:18:07,113 INFO Server.Configuration - GET /stop - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:18:07,829 INFO Server.Configuration - GET /stop - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:20:43,263 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:20:45,006 INFO Server.Configuration - GET /play - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:21:54,915 INFO Server.Configuration - GET /volume-up - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:21:56,320 INFO Server.Configuration - GET /volume-down - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:22:50,958 INFO Server.Configuration - Launching in development mode!
+2025-08-10 22:23:26,114 INFO Server.Configuration - GET /swagger/index.html - ORIGIN:  - {  }
+2025-08-10 22:23:26,191 INFO Server.Configuration - GET /swagger/swagger-ui.css - ORIGIN:  - {  }
+2025-08-10 22:23:26,205 INFO Server.Configuration - GET /swagger/index.css - ORIGIN:  - {  }
+2025-08-10 22:23:26,207 INFO Server.Configuration - GET /swagger/swagger-ui-bundle.js - ORIGIN:  - {  }
+2025-08-10 22:23:26,212 INFO Server.Configuration - GET /swagger/swagger-ui-standalone-preset.js - ORIGIN:  - {  }
+2025-08-10 22:23:26,324 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 22:23:26,382 INFO Server.Configuration - GET /swagger/favicon-32x32.png - ORIGIN:  - {  }
+2025-08-10 22:23:28,016 INFO Server.Configuration - GET /swagger/favicon-32x32.png - ORIGIN: chrome-extension://mpognobbkildjkofajifpdfhcoklimli - {  }
+2025-08-10 22:23:47,872 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 22:26:39,469 INFO Server.Configuration - GET /arrow-up - ORIGIN: http://localhost:5173 - {  }
+2025-08-10 22:27:23,814 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 22:27:24,260 INFO Server.Configuration - GET /assets/index-UYYbSoYV.js - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:27:24,277 INFO Server.Configuration - GET /assets/index-W-TSH6NB.css - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:27:24,481 INFO Server.Configuration - GET /vite.svg - ORIGIN:  - {  }
+2025-08-10 22:30:34,429 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 22:30:34,495 INFO Server.Configuration - GET /assets/index-BM851_ha.js - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:31:08,760 INFO Server.Configuration - GET /play - ORIGIN:  - {  }
+2025-08-10 22:31:10,327 INFO Server.Configuration - GET /play - ORIGIN:  - {  }
+2025-08-10 22:31:12,362 INFO Server.Configuration - GET /arrow-up - ORIGIN:  - {  }
+2025-08-10 22:31:13,123 INFO Server.Configuration - GET /arrow-up - ORIGIN:  - {  }
+2025-08-10 22:31:14,133 INFO Server.Configuration - GET /arrow-down - ORIGIN:  - {  }
+2025-08-10 22:31:14,337 INFO Server.Configuration - GET /arrow-down - ORIGIN:  - {  }
+2025-08-10 22:33:26,748 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 22:33:26,867 INFO Server.Configuration - GET /assets/index-D0aZAh8C.js - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:34:05,303 INFO Server.Configuration - Launching in development mode!
+2025-08-10 22:34:09,772 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 22:36:10,323 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 22:36:10,408 INFO Server.Configuration - GET /assets/index-2ujCuudk.js - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:36:22,574 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:24,428 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:28,135 INFO Server.Configuration - GET /play - ORIGIN:  - {  }
+2025-08-10 22:36:29,696 INFO Server.Configuration - GET /arrow-left - ORIGIN:  - {  }
+2025-08-10 22:36:31,038 INFO Server.Configuration - GET /arrow-right - ORIGIN:  - {  }
+2025-08-10 22:36:33,195 INFO Server.Configuration - GET /play - ORIGIN:  - {  }
+2025-08-10 22:36:35,093 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:42,949 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:44,534 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:47,671 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:48,786 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:49,319 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:49,802 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:50,005 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:50,256 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:54,638 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:54,973 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:55,605 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:55,801 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:55,999 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:56,208 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:36:59,930 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:00,483 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:00,977 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:01,184 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:01,376 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:03,201 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:04,497 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:04,693 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:04,912 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:05,145 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:08,247 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:08,428 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:08,631 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:08,859 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:09,059 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:10,533 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:11,176 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:12,312 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:12,512 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:12,738 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:13,420 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:13,661 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:18,631 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:18,821 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:19,087 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:19,839 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:20,041 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:20,231 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:20,424 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:24,098 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 22:37:24,176 INFO Server.Configuration - GET /assets/index-2ujCuudk.js - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:37:25,792 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:26,712 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:29,734 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:29,914 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:30,111 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:30,356 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:30,558 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:30,827 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:32,555 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:35,235 INFO Server.Configuration - GET /arrow-down - ORIGIN:  - {  }
+2025-08-10 22:37:36,660 INFO Server.Configuration - GET /arrow-up - ORIGIN:  - {  }
+2025-08-10 22:37:37,895 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:37:38,087 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:10,676 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:11,434 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:11,604 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:11,806 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:12,002 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:12,557 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:13,812 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:15,183 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:15,840 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:23,464 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:24,938 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:25,170 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:25,390 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:25,594 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:25,837 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:26,028 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:26,252 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:26,453 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:26,661 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:26,919 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:38:27,105 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:21,007 INFO Server.Configuration - Launching in development mode!
+2025-08-10 22:39:25,862 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:27,020 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:28,777 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:30,020 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:40,046 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:41,017 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:53,544 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:54,398 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:55,069 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:55,567 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:39:57,059 INFO Server.Configuration - GET /space - ORIGIN:  - {  }
+2025-08-10 22:40:59,118 INFO Server.Configuration - Launching in development mode!
+2025-08-10 22:41:18,484 INFO Server.Configuration - GET /swagger/v1/swagger.json - ORIGIN:  - {  }
+2025-08-10 22:42:19,656 INFO Server.Configuration - GET / - ORIGIN:  - {  }
+2025-08-10 22:42:19,729 INFO Server.Configuration - GET /assets/index-CWaoolEY.js - ORIGIN: http://pc-ryzen:7779 - {  }
+2025-08-10 22:42:27,347 INFO Server.Configuration - GET /kkey - ORIGIN:  - {  }
+2025-08-10 22:42:27,844 INFO Server.Configuration - GET /kkey - ORIGIN:  - {  }
+2025-08-10 22:42:28,619 INFO Server.Configuration - GET /kkey - ORIGIN:  - {  }
+2025-08-10 22:42:29,420 INFO Server.Configuration - GET /kkey - ORIGIN:  - {  }
+2025-08-10 22:42:30,839 INFO Server.Configuration - GET /arrow-down - ORIGIN:  - {  }
+2025-08-10 22:42:31,367 INFO Server.Configuration - GET /arrow-down - ORIGIN:  - {  }
+2025-08-10 22:42:34,230 INFO Server.Configuration - GET /kkey - ORIGIN:  - {  }
+2025-08-10 22:42:34,714 INFO Server.Configuration - GET /kkey - ORIGIN:  - {  }
