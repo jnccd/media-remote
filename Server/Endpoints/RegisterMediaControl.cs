@@ -57,9 +57,9 @@ public static class MediaControl
             return Results.Ok();
         });
 
-        app.MapGet("/kkey", () =>
+        app.MapGet("/space", () =>
         {
-            SimulateFullKeyPress(KeyCode.VcK);
+            SimulateFullKeyPress(KeyCode.VcSpace);
             return Results.Ok();
         });
 

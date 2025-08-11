@@ -2,10 +2,14 @@ import { Box, Button, Center, HStack, VStack } from "@chakra-ui/react";
 import "./App.css";
 import { mediaControlApiClient } from "./hooks/useMediaControlApi";
 import { PiPlayPauseFill } from "react-icons/pi";
-import { MdSkipNext, MdSkipPrevious, MdStop } from "react-icons/md";
+import {
+  MdOutlineSpaceBar,
+  MdSkipNext,
+  MdSkipPrevious,
+  MdStop,
+} from "react-icons/md";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import { FaVolumeDown, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
-import { ImYoutube2 } from "react-icons/im";
 
 function App() {
   return (
@@ -119,9 +123,9 @@ function App() {
             <Button
               height={"50px"}
               paddingX={3}
-              onClick={() => mediaControlApiClient.kkey()}
+              onClick={() => mediaControlApiClient.space()}
             >
-              <ImYoutube2 size={60} />
+              <MdOutlineSpaceBar size={60} />
             </Button>
           </HStack>
 
