@@ -1,4 +1,3 @@
-using Microsoft.Extensions.FileProviders;
 using SharpHook;
 using SharpHook.Data;
 
