@@ -7,88 +7,84 @@ namespace Server.Endpoints;
 public static class MediaControl
 {
     static EventSimulator simulator = new EventSimulator();
+    static void SimulateFullKeyPress(KeyCode keyCode)
+    {
+        simulator.SimulateKeyPress(KeyCode.VcLeft);
+        Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
+        simulator.SimulateKeyRelease(KeyCode.VcLeft);
+    }
 
     public static void RegisterMediaControlEndpoints(this WebApplication app)
     {
         app.MapGet("/play", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcMediaPlay);
+            SimulateFullKeyPress(KeyCode.VcMediaPlay);
             return Results.Ok();
         });
 
         app.MapGet("/next", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcMediaNext);
+            SimulateFullKeyPress(KeyCode.VcMediaNext);
             return Results.Ok();
         });
 
         app.MapGet("/previous", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcMediaPrevious);
+            SimulateFullKeyPress(KeyCode.VcMediaPrevious);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-left", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcLeft);
-            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-            simulator.SimulateKeyRelease(KeyCode.VcLeft);
+            SimulateFullKeyPress(KeyCode.VcLeft);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-right", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcRight);
-            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-            simulator.SimulateKeyRelease(KeyCode.VcRight);
+            SimulateFullKeyPress(KeyCode.VcRight);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-up", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcUp);
-            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-            simulator.SimulateKeyRelease(KeyCode.VcUp);
+            SimulateFullKeyPress(KeyCode.VcUp);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-down", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcDown);
-            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-            simulator.SimulateKeyRelease(KeyCode.VcDown);
+            SimulateFullKeyPress(KeyCode.VcDown);
             return Results.Ok();
         });
 
         app.MapGet("/kkey", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcK);
-            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-            simulator.SimulateKeyRelease(KeyCode.VcK);
+            SimulateFullKeyPress(KeyCode.VcK);
             return Results.Ok();
         });
 
         app.MapGet("/stop", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcMediaStop);
+            SimulateFullKeyPress(KeyCode.VcMediaStop);
             return Results.Ok();
         });
 
         app.MapGet("/volume-up", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcVolumeUp);
+            SimulateFullKeyPress(KeyCode.VcVolumeUp);
             return Results.Ok();
         });
 
         app.MapGet("/volume-down", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcVolumeDown);
+            SimulateFullKeyPress(KeyCode.VcVolumeDown);
             return Results.Ok();
         });
 
         app.MapGet("/volume-mute", () =>
         {
-            simulator.SimulateKeyPress(KeyCode.VcVolumeMute);
+            SimulateFullKeyPress(KeyCode.VcVolumeMute);
             return Results.Ok();
         });
     }
