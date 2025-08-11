@@ -9,9 +9,9 @@ public static class MediaControl
     static EventSimulator simulator = new EventSimulator();
     static void SimulateFullKeyPress(KeyCode keyCode)
     {
-        simulator.SimulateKeyPress(KeyCode.VcLeft);
+        simulator.SimulateKeyPress(keyCode);
         Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-        simulator.SimulateKeyRelease(KeyCode.VcLeft);
+        simulator.SimulateKeyRelease(keyCode);
     }
 
     public static void RegisterMediaControlEndpoints(this WebApplication app)
