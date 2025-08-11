@@ -31,30 +31,40 @@ public static class MediaControl
         app.MapGet("/arrow-left", () =>
         {
             simulator.SimulateKeyPress(KeyCode.VcLeft);
+            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
+            simulator.SimulateKeyRelease(KeyCode.VcLeft);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-right", () =>
         {
             simulator.SimulateKeyPress(KeyCode.VcRight);
+            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
+            simulator.SimulateKeyRelease(KeyCode.VcRight);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-up", () =>
         {
             simulator.SimulateKeyPress(KeyCode.VcUp);
+            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
+            simulator.SimulateKeyRelease(KeyCode.VcUp);
             return Results.Ok();
         });
 
         app.MapGet("/arrow-down", () =>
         {
             simulator.SimulateKeyPress(KeyCode.VcDown);
+            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
+            simulator.SimulateKeyRelease(KeyCode.VcDown);
             return Results.Ok();
         });
 
         app.MapGet("/kkey", () =>
         {
             simulator.SimulateKeyPress(KeyCode.VcK);
+            Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
+            simulator.SimulateKeyRelease(KeyCode.VcK);
             return Results.Ok();
         });
 
