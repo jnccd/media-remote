@@ -40,7 +40,11 @@ function App() {
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleMediaApiReq = async (route: string) => {
-    postReqTo(route)
+    postReqTo(
+      route.replace(/[A-Z]/g, (match, offset) =>
+        offset === 0 ? match.toLowerCase() : `-${match.toLowerCase()}`
+      )
+    )
       .then((res) => {
         if (res instanceof Error) {
           setErrorState(res);
@@ -119,7 +123,7 @@ function App() {
         </AlertDialogOverlay>
       </AlertDialog>
 
-      <Center height={"100vh"}>
+      <Center height={"100%"}>
         <VStack>
           <HStack>
             <Button
