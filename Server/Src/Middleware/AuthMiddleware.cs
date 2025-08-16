@@ -32,23 +32,23 @@ public class AuthMiddleware
             return;
         }
 
-        string authHeaderVal;
+        string authHeaderVal, decryptedDateTimeString;
         try
         {
             var parsedHeader = JsonConvert.DeserializeObject<CustomHttpHeader>(HttpHelpers.GetRequestBody(context.Request).Result);
             authHeaderVal = parsedHeader?.headers?.Authorization!;
+
+            var authHeader = authHeaderVal.ToString();
+            var unBase64dAuthHeader = Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
+            var decryptedHeader = XOR.XorCipher(unBase64dAuthHeader, _expectedPassword);
+            decryptedDateTimeString = decryptedHeader.Split(',')[1];
         }
         catch
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await context.Response.WriteAsync("Unauthorized: Missing Authorization header.");
+            await context.Response.WriteAsync("Unauthorized: Missing or malformed Authorization header.");
             return;
         }
-
-        var authHeader = authHeaderVal.ToString();
-        var unBase64dAuthHeader = Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
-        var decryptedHeader = XOR.XorCipher(unBase64dAuthHeader, _expectedPassword);
-        var decryptedDateTimeString = decryptedHeader.Split(',')[1];
         if (!DateTime.TryParse(decryptedDateTimeString, null, System.Globalization.DateTimeStyles.RoundtripKind, out var decryptedDateTime))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
