@@ -15,73 +15,73 @@ public static class MediaControl
 
     public static void RegisterMediaControlEndpoints(this WebApplication app)
     {
-        app.MapGet("/play", () =>
+        app.MapPost("/play", () =>
         {
             SimulateFullKeyPress(KeyCode.VcMediaPlay);
             return Results.Ok();
         });
 
-        app.MapGet("/next", () =>
+        app.MapPost("/next", () =>
         {
             SimulateFullKeyPress(KeyCode.VcMediaNext);
             return Results.Ok();
         });
 
-        app.MapGet("/previous", () =>
+        app.MapPost("/previous", () =>
         {
             SimulateFullKeyPress(KeyCode.VcMediaPrevious);
             return Results.Ok();
         });
 
-        app.MapGet("/arrow-left", () =>
+        app.MapPost("/arrow-left", () =>
         {
             SimulateFullKeyPress(KeyCode.VcLeft);
             return Results.Ok();
         });
 
-        app.MapGet("/arrow-right", () =>
+        app.MapPost("/arrow-right", () =>
         {
             SimulateFullKeyPress(KeyCode.VcRight);
             return Results.Ok();
         });
 
-        app.MapGet("/arrow-up", () =>
+        app.MapPost("/arrow-up", () =>
         {
             SimulateFullKeyPress(KeyCode.VcUp);
             return Results.Ok();
         });
 
-        app.MapGet("/arrow-down", () =>
+        app.MapPost("/arrow-down", () =>
         {
             SimulateFullKeyPress(KeyCode.VcDown);
             return Results.Ok();
         });
 
-        app.MapGet("/space", () =>
+        app.MapPost("/space", () =>
         {
             SimulateFullKeyPress(KeyCode.VcSpace);
             return Results.Ok();
         });
 
-        app.MapGet("/stop", () =>
+        app.MapPost("/stop", () =>
         {
             SimulateFullKeyPress(KeyCode.VcMediaStop);
             return Results.Ok();
         });
 
-        app.MapGet("/volume-up", () =>
+        app.MapPost("/volume-up", () =>
         {
             SimulateFullKeyPress(KeyCode.VcVolumeUp);
             return Results.Ok();
         });
 
-        app.MapGet("/volume-down", () =>
+        app.MapPost("/volume-down", () =>
         {
             SimulateFullKeyPress(KeyCode.VcVolumeDown);
             return Results.Ok();
         });
 
-        app.MapGet("/volume-mute", () =>
+        app.MapPost("/volume-mute", () =>
         {
             SimulateFullKeyPress(KeyCode.VcVolumeMute);
             return Results.Ok();

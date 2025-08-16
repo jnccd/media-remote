@@ -57,39 +57,10 @@ public static class Configuration
         app.UseSwaggerUi();
 
         app.UseCors(policy => policy
-            .AllowAnyOrigin()
+            .WithOrigins("http://localhost:5173", "http://pc-ryzen:7779") // Sadly, this is needed for CORS to work preflight options auth reqs
             .AllowAnyMethod()
             .AllowAnyHeader());
 #endif
-    }
-
-    public static void AddRequestLoggingMiddleware(this WebApplication app)
-    {
-        var logger = app.Services.GetService(typeof(LoggerService)) as LoggerService;
-        app.Use(async (context, next) =>
-        {
-            try
-            {
-                logger?.WriteLine($"{context.Request.Method} {context.Request.Path}{context.Request.QueryString} - ORIGIN: {context.Request.Headers.Origin} - {{ {GetRequestBody(context.Request).Result} }}");
-                await next.Invoke();
-            }
-            catch (Exception e)
-            {
-                logger?.WriteLine(e);
-            }
-        });
-    }
-    private static async Task<string> GetRequestBody(HttpRequest request)
-    {
-        if (!request.Body.CanSeek)
-            request.EnableBuffering();
-        request.Body.Position = 0;
-
-        var rawRequestBody = await new StreamReader(request.Body).ReadToEndAsync();
-
-        request.Body.Position = 0;
-
-        return rawRequestBody;
     }
 
     public static void ConfigureWebhost(this WebApplicationBuilder builder)
