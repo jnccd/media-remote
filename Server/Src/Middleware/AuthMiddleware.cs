@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Server.Helpers;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
+public class CustomAuthorizeAttribute : Attribute { }
 
 public class AuthMiddleware
 {
@@ -21,7 +25,8 @@ public class AuthMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Request.Method == "OPTIONS" || context.Request.Path.Value?.Contains("/swagger/") == true)
+        var endpoint = context.GetEndpoint();
+        if (context.Request.Method == "OPTIONS" || endpoint?.Metadata.GetMetadata<CustomAuthorizeAttribute>() == null)
         {
             await _next(context);
             return;
