@@ -31,7 +31,7 @@ public class AuthMiddleware
         try
         {
             var parsedHeader = JsonConvert.DeserializeObject<CustomHttpHeader>(HttpHelpers.GetRequestBody(context.Request).Result);
-            authHeaderVal = parsedHeader?.headers?.Authorization;
+            authHeaderVal = parsedHeader?.headers?.Authorization!;
         }
         catch
         {
