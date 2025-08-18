@@ -20,6 +20,8 @@ public class AuthMiddleware(RequestDelegate next, IConfiguration config, LoggerS
 
     public async Task InvokeAsync(HttpContext context)
     {
+        context.Response.Headers.AccessControlAllowOrigin = "*";
+
         var endpoint = context.GetEndpoint();
         if (context.Request.Method == "OPTIONS" || endpoint?.Metadata.GetMetadata<CustomAuthorizeAttribute>() == null)
         {
