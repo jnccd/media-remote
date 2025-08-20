@@ -1,41 +1,37 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
 import './App.css';
+import { Box, Center, Input, Text } from '@chakra-ui/react';
+import { useRef, useState } from 'react';
 
 function Hello() {
+  const [inputt, setInputt] = useState(null as string | null);
+  const [showedText, setShowedText] = useState(null as string | null);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   return (
-    <div>
-      <div className="Hello">
-        <img width="200" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="folded hands">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
-    </div>
+    <Center>
+      <Box>
+        <Text>UwU</Text>
+        <Input
+          id="inputt"
+          ref={inputRef}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const inp = inputRef.current?.value ?? null;
+              setInputt(inp);
+              console.log(inp);
+              window.api.fs.readFile(inp ?? '').then((data) => {
+                console.log(data);
+                setShowedText(data);
+              });
+            }
+          }}
+        />
+        <Text>{showedText}</Text>
+      </Box>
+    </Center>
   );
 }
 

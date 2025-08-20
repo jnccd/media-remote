@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { registerIpc } from './ipc';
 
 class AppUpdater {
   constructor() {
@@ -103,9 +104,7 @@ const createWindow = async () => {
   });
 
   function createTray() {
-    const icon = app.isPackaged
-      ? path.join(__dirname, 'icon.png')
-      : path.join(__dirname, '../../assets/icon.png'); // use a 16x16 or 32x32 PNG
+    const icon = getAssetPath('icon.png'); // use a 16x16 or 32x32 PNG
     tray = new Tray(icon);
 
     const contextMenu = Menu.buildFromTemplate([
@@ -161,6 +160,7 @@ app
   .whenReady()
   .then(() => {
     createWindow();
+    registerIpc();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.

@@ -25,5 +25,13 @@ const electronHandler = {
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
+contextBridge.exposeInMainWorld('api', {
+  window: {
+    minimize: () => ipcRenderer.invoke('window:minimize'),
+  },
+  fs: {
+    readFile: (path: string) => ipcRenderer.invoke('fs:readFile', path),
+  },
+});
 
 export type ElectronHandler = typeof electronHandler;
