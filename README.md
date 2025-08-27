@@ -8,6 +8,6 @@ The encryption is very sophisticated (not) but its enough for the local network 
 
 ## Installtion
 
-Due to advances in making everything simple as hell tech, you can just write `dotnet run` in the Server folder and it runs. The default password is pass, change the PASSWORD env var to something else for more security.
+Due to advances in making everything simple as hell tech, you can just write `dotnet run -c Release` in the Server folder and it runs. The default password is pass, change the PASSWORD env var to something else for more security.
 
 If you have too much RAM you can also use the electron server wrapper, it does the same but looks fancier and hides in a tray icon.
