@@ -57,7 +57,7 @@ public static class Configuration
         app.UseSwaggerUi();
 
         app.UseCors(policy => policy
-            .WithOrigins("http://localhost:5173", "http://pc-ryzen:7779") // Sadly, this is needed for CORS to work preflight options auth reqs
+            .WithOrigins("http://localhost:5173", "http://pc-ryzen:7779", "http://localhost:7779", "http://0.0.0.0:7779") // Sadly, this is needed for CORS to work preflight options auth reqs
             .AllowAnyMethod()
             .AllowAnyHeader());
 #endif

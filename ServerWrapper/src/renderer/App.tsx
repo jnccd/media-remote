@@ -1,7 +1,8 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { Box, Center, Input, Text } from '@chakra-ui/react';
+import { Box, Center, HStack, Input, Text, VStack } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
+import ConsoleView from './ConsoleView';
 
 function Hello() {
   const [inputt, setInputt] = useState(null as string | null);
@@ -11,26 +12,29 @@ function Hello() {
 
   return (
     <Center>
-      <Box>
-        <Text>UwU</Text>
-        <Input
-          id="inputt"
-          ref={inputRef}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              const inp = inputRef.current?.value ?? null;
-              setInputt(inp);
-              console.log(inp);
-              window.api.fs.readFile(inp ?? '').then((data) => {
-                console.log(data);
-                setShowedText(data);
-              });
-            }
-          }}
-        />
-        <Text>{showedText}</Text>
-      </Box>
+      <VStack>
+        {/* <HStack>
+          <Text>UwU!</Text>
+          <Input
+            id="inputt"
+            ref={inputRef}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const inp = inputRef.current?.value ?? null;
+                setInputt(inp);
+                console.log(inp);
+                window.api.fs.readFile(inp ?? '').then((data) => {
+                  console.log(data);
+                  setShowedText(data);
+                });
+              }
+            }}
+          />
+          <Text>{showedText}</Text>
+        </HStack> */}
+        <ConsoleView />
+      </VStack>
     </Center>
   );
 }

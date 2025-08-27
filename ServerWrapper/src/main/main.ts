@@ -24,7 +24,7 @@ class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
+export let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
@@ -58,24 +58,52 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+const getAssetPath = (...paths: string[]): string => {
+  const RESOURCES_PATH = app.isPackaged
+    ? path.join(process.resourcesPath, 'assets')
+    : path.join(__dirname, '../../assets');
+  return path.join(RESOURCES_PATH, ...paths);
+};
+const getIconsPath = (iconPath: string) =>
+  getAssetPath(path.join('generated-icons', iconPath));
+
+function createTray() {
+  const icon = getIconsPath('32x32.png'); // use a 16x16 or 32x32 PNG
+  tray = new Tray(icon);
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App',
+      click: () => {
+        mainWindow?.show();
+      },
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
+
+  tray.setToolTip('Media Remote Control');
+  tray.setContextMenu(contextMenu);
+
+  tray.on('double-click', () => {
+    mainWindow?.show();
+  });
+}
+
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
   }
 
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
-
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
-    icon: getAssetPath('icon.png'),
+    icon: getIconsPath('128x128.png'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -102,33 +130,6 @@ const createWindow = async () => {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
-  function createTray() {
-    const icon = getAssetPath('icon.png'); // use a 16x16 or 32x32 PNG
-    tray = new Tray(icon);
-
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: 'Show App',
-        click: () => {
-          mainWindow?.show();
-        },
-      },
-      {
-        label: 'Quit',
-        click: () => {
-          app.quit();
-        },
-      },
-    ]);
-
-    tray.setToolTip('My Electron App');
-    tray.setContextMenu(contextMenu);
-
-    tray.on('double-click', () => {
-      mainWindow?.show();
-    });
-  }
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();

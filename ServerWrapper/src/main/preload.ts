@@ -32,6 +32,18 @@ contextBridge.exposeInMainWorld('api', {
   fs: {
     readFile: (path: string) => ipcRenderer.invoke('fs:readFile', path),
   },
+  process: {
+    onStdout: (callback: (msg: string) => void) =>
+      ipcRenderer.on('process:stdout', (_event, msg) => callback(msg)),
+
+    onStderr: (callback: (msg: string) => void) =>
+      ipcRenderer.on('process:stderr', (_event, msg) => callback(msg)),
+
+    onExit: (callback: (code: number) => void) =>
+      ipcRenderer.on('process:exit', (_event, code) => callback(code)),
+
+    kill: () => ipcRenderer.invoke('process:kill'),
+  },
 });
 
 export type ElectronHandler = typeof electronHandler;
