@@ -1,20 +1,24 @@
 import { Box, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
+const MAX_LOGS = 100;
+
 export default function ConsoleView() {
   const [logs, setLogs] = useState<string[]>([]);
 
+  const pushLog = (msg: string) => {
+    setLogs((prev) => [...prev, msg].slice(-MAX_LOGS));
+  };
+
   useEffect(() => {
-    window.api.process.onStdout((msg) => {
-      setLogs((prev) => [...prev, msg]);
-    });
+    window.api.process.onStdout(pushLog);
 
     window.api.process.onStderr((msg) => {
-      setLogs((prev) => [...prev, `[ERR] ${msg}`]);
+      pushLog(`[ERR] ${msg}`);
     });
 
     window.api.process.onExit((code) => {
-      setLogs((prev) => [...prev, `Process exited with code ${code}`]);
+      pushLog(`Process exited with code ${code}`);
     });
   }, []);
 
@@ -25,8 +29,8 @@ export default function ConsoleView() {
       color="green.400"
       fontFamily="mono"
       p={2}
-      w="95vw"
-      h="90vh"
+      w="100vw"
+      h="100vh"
       overflowY="auto"
       whiteSpace="pre-wrap"
       borderRadius="md"

@@ -5,34 +5,9 @@ import { useRef, useState } from 'react';
 import ConsoleView from './ConsoleView';
 
 function Hello() {
-  const [inputt, setInputt] = useState(null as string | null);
-  const [showedText, setShowedText] = useState(null as string | null);
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
   return (
     <Center>
       <VStack>
-        {/* <HStack>
-          <Text>UwU!</Text>
-          <Input
-            id="inputt"
-            ref={inputRef}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                const inp = inputRef.current?.value ?? null;
-                setInputt(inp);
-                console.log(inp);
-                window.api.fs.readFile(inp ?? '').then((data) => {
-                  console.log(data);
-                  setShowedText(data);
-                });
-              }
-            }}
-          />
-          <Text>{showedText}</Text>
-        </HStack> */}
         <ConsoleView />
       </VStack>
     </Center>
