@@ -17,4 +17,8 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
 
+  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec WorkingDirectory="../Frontend" Command="pnpm i" />
+    <Exec WorkingDirectory="../Frontend" Command="pnpm run build" />
+  </Target>
 </Project>
