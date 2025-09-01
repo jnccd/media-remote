@@ -6,7 +6,9 @@ Lets you control your PC on your phone, for when you want to do a nice movie eve
 
 The encryption is very sophisticated (not) but its enough for the local network imo
 
-## Installtion
+## Installation
+
+The Server is supposed to go on the machine you watch media from.
 
 Due to advances in making everything simple as hell tech, you can just write `dotnet run -c Release` in the Server folder and it runs. The default password is pass, change the PASSWORD env var to something else for more security.
 
