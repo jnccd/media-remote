@@ -7,14 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cryptography.Fernet" Version="1.1.1" />
     <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.5.0" />
     <PackageReference Include="NSwag.Generation.AspNetCore" Version="14.5.0" />
     <PackageReference Include="SharpHook" Version="7.0.0" />
-    <PackageReference Include="SharpHook.Reactive" Version="7.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
 
   <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
