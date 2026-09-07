@@ -20,6 +20,7 @@ public sealed class LinuxYdotoolInputSimulator : IInputSimulator
         [SimKey.Down] = "108",
         [SimKey.Backspace] = "14",
         [SimKey.Escape] = "1",
+        [SimKey.F11] = "87",
         [SimKey.VolumeUp] = "115",
         [SimKey.VolumeDown] = "114",
         [SimKey.VolumeMute] = "113",

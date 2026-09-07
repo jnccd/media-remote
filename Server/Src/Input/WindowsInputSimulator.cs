@@ -33,6 +33,7 @@ public sealed class WindowsInputSimulator : IInputSimulator
         [SimKey.Down] = 0x28,
         [SimKey.Backspace] = 0x08,
         [SimKey.Escape] = 0x1B,
+        [SimKey.F11] = 0x7A,
         [SimKey.VolumeUp] = 0xAF,
         [SimKey.VolumeDown] = 0xAE,
         [SimKey.VolumeMute] = 0xAD,

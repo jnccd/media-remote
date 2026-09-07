@@ -7,7 +7,6 @@ import {
   AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
-  Box,
   Button,
   Center,
   HStack,
@@ -278,7 +277,14 @@ function App() {
               >
                 <GrFormPrevious size={60} />
               </Button>
-              <Box width={"92px"}></Box>
+              <Button
+                boxSize={"56px"}
+                borderRadius={"full"}
+                marginLeft={"28px"}
+                onClick={() => handleMediaApiReq("f11")}
+              >
+                F11
+              </Button>
             </HStack>
 
             <HStack>
