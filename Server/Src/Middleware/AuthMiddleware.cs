@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Server.Helpers;
 using Server.Services;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 public class CustomAuthorizeAttribute : Attribute { }
@@ -29,16 +26,11 @@ public class AuthMiddleware(RequestDelegate next, IConfiguration config, LoggerS
             return;
         }
 
-        string authHeaderVal, decryptedDateTimeString;
+        string authHeaderVal;
         try
         {
             var parsedHeader = JsonConvert.DeserializeObject<CustomHttpHeader>(HttpHelpers.GetRequestBody(context.Request).Result);
             authHeaderVal = parsedHeader?.headers?.Authorization!;
-
-            var authHeader = authHeaderVal.ToString();
-            var unBase64dAuthHeader = Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
-            var decryptedHeader = XOR.XorCipher(unBase64dAuthHeader, _expectedPassword);
-            decryptedDateTimeString = decryptedHeader.Split(',')[1];
         }
         catch
         {
@@ -47,21 +39,30 @@ public class AuthMiddleware(RequestDelegate next, IConfiguration config, LoggerS
             logger.WriteLine("Unauthorized: Missing or malformed Authorization header.");
             return;
         }
-        if (!DateTime.TryParse(decryptedDateTimeString, null, System.Globalization.DateTimeStyles.RoundtripKind, out var decryptedDateTime))
+
+        if (!IsAuthorized(authHeaderVal, _expectedPassword))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("Unauthorized: Invalid Authorization.");
             logger.WriteLine("Unauthorized: Invalid Authorization.");
             return;
         }
-        if (decryptedDateTime < DateTime.UtcNow.AddSeconds(-2) || decryptedDateTime > DateTime.UtcNow.AddSeconds(3))
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await context.Response.WriteAsync("Unauthorized: Outdated Authorization.");
-            logger.WriteLine($"Unauthorized: Outdated Authorization. by {decryptedDateTime - DateTime.UtcNow}");
-            return;
-        }
 
         await _next(context);
+    }
+
+    /// <summary>
+    /// Validates an AES-GCM-encrypted ISO timestamp token against the expected password,
+    /// requiring the timestamp to be within a small window around "now". Shared by the HTTP
+    /// middleware and the input WebSocket so both use the same authenticated scheme.
+    /// </summary>
+    public static bool IsAuthorized(string token, string expectedPassword)
+    {
+        if (!TokenCrypto.TryDecrypt(expectedPassword, token, out var plaintext))
+            return false;
+        if (!DateTime.TryParse(plaintext, null, System.Globalization.DateTimeStyles.RoundtripKind, out var decryptedDateTime))
+            return false;
+        return decryptedDateTime >= DateTime.UtcNow.AddSeconds(-2) &&
+               decryptedDateTime <= DateTime.UtcNow.AddSeconds(3);
     }
 }

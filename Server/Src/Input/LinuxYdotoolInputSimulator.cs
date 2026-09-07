@@ -36,6 +36,13 @@ public sealed class LinuxYdotoolInputSimulator : IInputSimulator
         await RunAsync("ydotool", new[] { "key", code });
     }
 
+    public async Task TypeTextAsync(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return;
+        await RunAsync("ydotool", new[] { "type", text });
+    }
+
     public async Task MoveMouseAsync(int dx, int dy)
     {
         await RunAsync("ydotool", new[] { "mousemove", "--relative", $"--x={dx}", $"--y={dy}" });

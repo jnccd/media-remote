@@ -6,6 +6,7 @@ public static class Endpoints
     {
         app.RegisterFrontendStaticFiles();
         app.RegisterMediaControlEndpoints();
+        app.RegisterInputSocketEndpoint();
         app.MapControllers();
     }
 }

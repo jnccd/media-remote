@@ -37,6 +37,7 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { AxiosError } from "axios";
 import { usePageHeightThreshold } from "./hooks/usePageHeightThreshold";
 import { usePageWidthThreshold } from "./hooks/usePageWidthThreshold";
+import InputPad from "./components/InputPad";
 
 function App() {
   const [errorState, setErrorState] = useState(null as Error | null);
@@ -317,6 +318,8 @@ function App() {
                 <MdStop size={40} />
               </Button>
             </VStack>
+
+            <InputPad password={String(password ?? "")} />
 
             <Button
               margin={5}

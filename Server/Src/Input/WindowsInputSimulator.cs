@@ -12,6 +12,7 @@ public sealed class WindowsInputSimulator : IInputSimulator
     private const uint INPUT_MOUSE = 0;
 
     private const uint KEYEVENTF_KEYUP = 0x0002;
+    private const uint KEYEVENTF_UNICODE = 0x0004;
 
     private const uint MOUSEEVENTF_MOVE = 0x0001;
     private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
@@ -94,6 +95,19 @@ public sealed class WindowsInputSimulator : IInputSimulator
         });
     }
 
+    public async Task TypeTextAsync(string text)
+    {
+        await Task.Run(() =>
+        {
+            foreach (var ch in text)
+            {
+                SendUnicode(ch, keyUp: false);
+                Thread.Sleep(6);
+                SendUnicode(ch, keyUp: true);
+            }
+        });
+    }
+
     public async Task MoveMouseAsync(int dx, int dy)
     {
         await Task.Run(() =>
@@ -171,6 +185,26 @@ public sealed class WindowsInputSimulator : IInputSimulator
                     wVk = vk,
                     wScan = 0,
                     dwFlags = keyUp ? KEYEVENTF_KEYUP : 0,
+                    time = 0,
+                    dwExtraInfo = IntPtr.Zero,
+                },
+            },
+        };
+        SendOnly(input);
+    }
+
+    private static void SendUnicode(char ch, bool keyUp)
+    {
+        var input = new INPUT
+        {
+            type = INPUT_KEYBOARD,
+            U = new INPUTUNION
+            {
+                ki = new KEYBDINPUT
+                {
+                    wVk = 0,
+                    wScan = ch,
+                    dwFlags = (keyUp ? KEYEVENTF_KEYUP : 0) | KEYEVENTF_UNICODE,
                     time = 0,
                     dwExtraInfo = IntPtr.Zero,
                 },

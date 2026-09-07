@@ -9,6 +9,8 @@ public static class RegisterMiddlewareExtensions
     public static void RegisterMiddleware(this WebApplication app)
     {
         app.AddRequestLoggingMiddleware();
+        // Enable WebSockets so /inputws can carry low-latency mouse/keyboard input.
+        app.UseWebSockets();
         app.UseMiddleware<AuthMiddleware>();
     }
 

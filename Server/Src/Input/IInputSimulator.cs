@@ -10,6 +10,9 @@ public interface IInputSimulator : IDisposable
 {
     Task PressAsync(SimKey key);
 
+    /// <summary>Types arbitrary text character-by-character (general keyboard input).</summary>
+    Task TypeTextAsync(string text);
+
     /// <summary>Moves the pointer by <paramref name="dx"/>/<paramref name="dy"/> pixels (relative).</summary>
     Task MoveMouseAsync(int dx, int dy);
 

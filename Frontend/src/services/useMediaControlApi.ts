@@ -17,13 +17,12 @@ var axiosClientPassword: string | null = null;
 export const setAxiosClientPassword = (password: string | null) =>
   (axiosClientPassword = password);
 
-export const postReqTo = (route: string) => {
+export const postReqTo = async (route: string) => {
+  const auth = await getAuthHeaderForMediaControlAPI(axiosClientPassword ?? "a");
   return axiosClient.post(`${route}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthHeaderForMediaControlAPI(
-        axiosClientPassword ?? "a"
-      ),
+      Authorization: auth,
     },
   });
 };
