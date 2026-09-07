@@ -56,6 +56,12 @@ foreach ($rid in $Rids) {
     $outDir = Join-Path $distRoot $rid
     Write-Host "==> Publishing $rid -> $outDir"
 
+    # Start from a clean output dir so stale files (e.g. old frontend bundles / old server
+    # dlls) don't linger and end up in the bundle.
+    if (Test-Path $outDir) {
+        Remove-Item -Recurse -Force $outDir
+    }
+
     & dotnet publish $serverProj `
         -c $Runtime `
         -r $rid `
@@ -68,9 +74,15 @@ foreach ($rid in $Rids) {
 
     # --- 3. Bundle the frontend where the server will look for it -------------
     $frontDest = Join-Path $outDir 'Frontend'
+    $frontDestDist = Join-Path $frontDest 'dist'
+
+    # Replace (not merge) so stale assets from a previous build don't persist.
+    if (Test-Path $frontDestDist) {
+        Remove-Item -Recurse -Force $frontDestDist
+    }
     New-Item -ItemType Directory -Force -Path $frontDest | Out-Null
-    Copy-Item -Recurse -Force (Join-Path $frontendDir 'dist') (Join-Path $frontDest 'dist')
-    Write-Host "    Frontend bundled at $frontDest/dist"
+    Copy-Item -Recurse -Force (Join-Path $frontendDir 'dist') $frontDestDist
+    Write-Host "    Frontend bundled at $frontDestDist"
 }
 
 Write-Host "==> Done. Artifacts in $distRoot"
