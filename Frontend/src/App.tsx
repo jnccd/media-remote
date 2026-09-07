@@ -149,7 +149,7 @@ function App() {
       </AlertDialog>
 
       <Center height={wideLayoutActive ? "80%" : "70%"}>
-        <HStack paddingTop={wideLayoutActive ? "60px" : "60px"}>
+        <HStack paddingTop={wideLayoutActive ? "30px" : "30px"}>
           <VStack
             visibility={wideLayoutActive ? "visible" : "hidden"}
             height={wideLayoutActive ? "fit-content" : "0px"}
