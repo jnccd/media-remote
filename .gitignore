@@ -1,1 +1,6 @@
 .direnv/
+
+# Publish output (publish.ps1 / desktop build scripts -> ./dist/<rid>/Server[.exe])
+/dist/
+
+node_modules/

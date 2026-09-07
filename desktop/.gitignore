@@ -1,0 +1,12 @@
+# Node / Vite frontend
+node_modules/
+dist/
+*.local
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Bundled published server (build.ps1 / build.sh drop it here); keep the placeholder.
+src-tauri/resources/server/*
+!src-tauri/resources/server/.gitkeep
