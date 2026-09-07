@@ -24,7 +24,6 @@ import {
 } from "./services/useMediaControlApi";
 import { PiPlayPauseFill } from "react-icons/pi";
 import {
-  MdBackspace,
   MdOutlineSpaceBar,
   MdSkipNext,
   MdSkipPrevious,
@@ -264,9 +263,9 @@ function App() {
                 boxSize={"56px"}
                 borderRadius={"full"}
                 marginRight={"28px"}
-                onClick={() => handleMediaApiReq("backspace")}
+                onClick={() => handleMediaApiReq("escape")}
               >
-                <MdBackspace size={40} />
+                Esc
               </Button>
               <Button
                 width={"80px"}

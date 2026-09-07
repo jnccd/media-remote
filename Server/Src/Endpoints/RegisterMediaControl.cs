@@ -70,6 +70,12 @@ public static class MediaControl
             return Results.Ok();
         });
 
+        app.MapPost("/escape", [CustomAuthorize] async (IInputSimulator sim) =>
+        {
+            await sim.PressAsync(SimKey.Escape);
+            return Results.Ok();
+        });
+
         // Volume is treated as system volume, so it stays as raw key injection
         // (matching Windows behavior, where VK_VOLUME_* adjusts system volume).
         app.MapPost("/volume-up", [CustomAuthorize] async (IInputSimulator sim) =>

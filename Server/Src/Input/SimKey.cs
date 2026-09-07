@@ -14,6 +14,7 @@ public enum SimKey
     Up,
     Down,
     Backspace,
+    Escape,
     VolumeUp,
     VolumeDown,
     VolumeMute,

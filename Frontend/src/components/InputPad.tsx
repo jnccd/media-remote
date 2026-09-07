@@ -22,11 +22,14 @@ export default function InputPad({ password }: { password: string }) {
   const moved = useRef(false);
   const pending = useRef({ dx: 0, dy: 0, raf: 0 as number | 0 });
 
+  // Multiplier applied to the pointer delta before it's streamed to the host.
+  const SENSITIVITY = 1.5;
+
   const flush = () => {
     const p = pending.current;
     p.raf = 0;
     if (p.dx !== 0 || p.dy !== 0) {
-      moveMouse(p.dx, p.dy);
+      moveMouse(Math.round(p.dx * SENSITIVITY), Math.round(p.dy * SENSITIVITY));
       p.dx = 0;
       p.dy = 0;
     }
@@ -63,29 +66,42 @@ export default function InputPad({ password }: { password: string }) {
 
   return (
     <HStack gap={3} marginTop={3}>
-      <VStack gap={1}>
-        <Box
-          data-testid="touchpad"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onWheel={onWheel}
-          style={{
-            touchAction: "none",
-            userSelect: "none",
-            cursor: "crosshair",
-          }}
-          width={180}
-          height={120}
-          bg="gray.800"
-          border="1px solid"
-          borderColor="gray.600"
-          borderRadius="md"
-        />
-        <Text fontSize="sm" color={ready ? "green.400" : "red.400"}>
-          {ready ? "⚡ live" : error ? error : "connecting…"}
-        </Text>
-      </VStack>
+      {/* Mouse cluster: touchpad with the R/M leave buttons flush beside it. */}
+      <HStack spacing={0} align="flex-start">
+        <VStack gap={1}>
+          <Box
+            data-testid="touchpad"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onWheel={onWheel}
+            style={{
+              touchAction: "none",
+              userSelect: "none",
+              cursor: "crosshair",
+            }}
+            width={180}
+            height={120}
+            bg="gray.800"
+            border="1px solid"
+            borderColor="gray.600"
+            borderRadius="md"
+          />
+          <Text fontSize="sm" color={ready ? "green.400" : "red.400"}>
+            {ready ? "⚡ live" : error ? error : "connecting…"}
+          </Text>
+        </VStack>
+
+        {/* Mouse buttons stacked to fill the touchpad's height, no gap between them. */}
+        <VStack height={120} spacing={0}>
+          <Button flex={1} width={48} onClick={() => click("right")}>
+            R
+          </Button>
+          <Button flex={1} width={48} onClick={() => click("middle")}>
+            M
+          </Button>
+        </VStack>
+      </HStack>
 
       <Input
         value={text}
@@ -106,15 +122,6 @@ export default function InputPad({ password }: { password: string }) {
         size="md"
         autoComplete="off"
       />
-
-      <VStack gap={1}>
-        <Button size="xs" onClick={() => click("right")}>
-          R
-        </Button>
-        <Button size="xs" onClick={() => click("middle")}>
-          M
-        </Button>
-      </VStack>
     </HStack>
   );
 }
