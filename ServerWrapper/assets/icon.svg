@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="200px" height="200px"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="200px" width="200px" version="1.1" id="SvgjsSvg1433" sodipodi:docname="remote.svg" inkscape:version="1.2 (dc2aedaf03, 2022-05-15)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-  <defs id="SvgjsDefs1432"></defs>
-  <sodipodi:namedview id="SvgjsSodipodi:namedview1431" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" showgrid="false" inkscape:zoom="4.185" inkscape:cx="91.397849" inkscape:cy="100.23895" inkscape:window-width="1920" inkscape:window-height="1018" inkscape:window-x="-6" inkscape:window-y="-6" inkscape:window-maximized="1" inkscape:current-layer="svg6"></sodipodi:namedview>
-  <path fill="none" d="M0 0h24v24H0z" id="SvgjsPath1430"></path>
-  <path d="M15 9H9c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V10c0-.55-.45-1-1-1zm-3 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM7.05 6.05l1.41 1.41a5.022 5.022 0 0 1 7.08 0l1.41-1.41C15.68 4.78 13.93 4 12 4s-3.68.78-4.95 2.05zM12 0C8.96 0 6.21 1.23 4.22 3.22l1.41 1.41C7.26 3.01 9.51 2 12 2s4.74 1.01 6.36 2.64l1.41-1.41C17.79 1.23 15.04 0 12 0z" id="SvgjsPath1429" style="fill:#e6e6e6"></path>
-</svg><style>@media (prefers-color-scheme: light) { :root { filter: contrast(1) brightness(0.7); } }
-@media (prefers-color-scheme: dark) { :root { filter: none; } }
-</style></svg>
