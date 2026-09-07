@@ -1,5 +1,6 @@
 using System.Net;
 using System.Reflection;
+using Server.Input;
 using Server.Services;
 using NSwag;
 
@@ -46,20 +47,28 @@ public static class Configuration
 
         // Controller
         builder.Services.AddControllers();
+
+        // Platform-specific input/media backends (Windows vs Linux).
+        builder.Services.AddSingleton<IInputSimulator>(_ => InputBackendFactory.CreateInputSimulator());
+        builder.Services.AddSingleton<IMediaController>(_ => InputBackendFactory.CreateMediaController());
     }
 
     public static void ConfigureWebApp(this WebApplication app)
     {
         var logger = app.Services.GetService(typeof(LoggerService)) as LoggerService;
+
+        // CORS is required in all environments: the remote UI may be opened same-origin
+        // (localhost:7779) or cross-origin (a dev server on :5173, or a different host), and
+        // the Authorization header makes those cross-origin requests trigger a CORS preflight.
+        app.UseCors(policy => policy
+            .WithOrigins("http://localhost:5173", "http://pc-ryzen:7779", "http://localhost:7779", "http://0.0.0.0:7779")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
 #if DEBUG
         logger!.WriteLine("Launching in development mode!");
         app.UseOpenApi();
         app.UseSwaggerUi();
-
-        app.UseCors(policy => policy
-            .WithOrigins("http://localhost:5173", "http://pc-ryzen:7779", "http://localhost:7779", "http://0.0.0.0:7779") // Sadly, this is needed for CORS to work preflight options auth reqs
-            .AllowAnyMethod()
-            .AllowAnyHeader());
 #endif
     }
 

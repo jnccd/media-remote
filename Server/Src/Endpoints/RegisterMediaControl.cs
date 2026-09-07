@@ -1,96 +1,92 @@
-using Microsoft.AspNetCore.Authorization;
-using SharpHook;
-using SharpHook.Data;
+using Server.Input;
 
 namespace Server.Endpoints;
 
 public static class MediaControl
 {
-    static EventSimulator simulator = new EventSimulator();
-    static void SimulateFullKeyPress(KeyCode keyCode)
-    {
-        simulator.SimulateKeyPress(keyCode);
-        Task.Delay(80).Wait(); // Adding a small delay to ensure the key press is registered
-        simulator.SimulateKeyRelease(keyCode);
-    }
-
     public static void RegisterMediaControlEndpoints(this WebApplication app)
     {
-        app.MapPost("/play", [CustomAuthorize] () =>
+        // Media transport is routed through IMediaController (MPRIS on Linux,
+        // simulated media keys on Windows).
+        app.MapPost("/play", [CustomAuthorize] async (IMediaController media) =>
         {
-            SimulateFullKeyPress(KeyCode.VcMediaPlay);
+            await media.PlayPauseAsync();
             return Results.Ok();
         });
 
-        app.MapPost("/next", [CustomAuthorize] () =>
+        app.MapPost("/next", [CustomAuthorize] async (IMediaController media) =>
         {
-            SimulateFullKeyPress(KeyCode.VcMediaNext);
+            await media.NextAsync();
             return Results.Ok();
         });
 
-        app.MapPost("/previous", [CustomAuthorize] () =>
+        app.MapPost("/previous", [CustomAuthorize] async (IMediaController media) =>
         {
-            SimulateFullKeyPress(KeyCode.VcMediaPrevious);
+            await media.PreviousAsync();
             return Results.Ok();
         });
 
-        app.MapPost("/arrow-left", [CustomAuthorize] () =>
+        app.MapPost("/stop", [CustomAuthorize] async (IMediaController media) =>
         {
-            SimulateFullKeyPress(KeyCode.VcLeft);
+            await media.StopAsync();
             return Results.Ok();
         });
 
-        app.MapPost("/arrow-right", [CustomAuthorize] () =>
+        // Navigation keys are always raw injection (worked on every platform, regardless
+        // of whether a media player is present).
+        app.MapPost("/space", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcRight);
+            await sim.PressAsync(SimKey.Space);
             return Results.Ok();
         });
 
-        app.MapPost("/arrow-up", [CustomAuthorize] () =>
+        app.MapPost("/arrow-left", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcUp);
+            await sim.PressAsync(SimKey.Left);
             return Results.Ok();
         });
 
-        app.MapPost("/arrow-down", [CustomAuthorize] () =>
+        app.MapPost("/arrow-right", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcDown);
+            await sim.PressAsync(SimKey.Right);
             return Results.Ok();
         });
 
-        app.MapPost("/space", [CustomAuthorize] () =>
+        app.MapPost("/arrow-up", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcSpace);
+            await sim.PressAsync(SimKey.Up);
             return Results.Ok();
         });
 
-        app.MapPost("/backspace", [CustomAuthorize] () =>
+        app.MapPost("/arrow-down", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcBackspace);
+            await sim.PressAsync(SimKey.Down);
             return Results.Ok();
         });
 
-        app.MapPost("/stop", [CustomAuthorize] () =>
+        app.MapPost("/backspace", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcMediaStop);
+            await sim.PressAsync(SimKey.Backspace);
             return Results.Ok();
         });
 
-        app.MapPost("/volume-up", [CustomAuthorize] () =>
+        // Volume is treated as system volume, so it stays as raw key injection
+        // (matching Windows behavior, where VK_VOLUME_* adjusts system volume).
+        app.MapPost("/volume-up", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcVolumeUp);
+            await sim.PressAsync(SimKey.VolumeUp);
             return Results.Ok();
         });
 
-        app.MapPost("/volume-down", [CustomAuthorize] () =>
+        app.MapPost("/volume-down", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcVolumeDown);
+            await sim.PressAsync(SimKey.VolumeDown);
             return Results.Ok();
         });
 
-        app.MapPost("/volume-mute", [CustomAuthorize] () =>
+        app.MapPost("/volume-mute", [CustomAuthorize] async (IInputSimulator sim) =>
         {
-            SimulateFullKeyPress(KeyCode.VcVolumeMute);
+            await sim.PressAsync(SimKey.VolumeMute);
             return Results.Ok();
         });
     }

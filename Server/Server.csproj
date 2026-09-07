@@ -12,9 +12,10 @@
     <PackageReference Include="NSwag.AspNetCore" Version="14.5.0" />
     <PackageReference Include="NSwag.Generation.AspNetCore" Version="14.5.0" />
     <PackageReference Include="SharpHook" Version="7.0.0" />
+    <PackageReference Include="Tmds.DBus" Version="0.9.0" />
   </ItemGroup>
 
-  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release' And '$(BuildFrontend)' != 'false'">
     <Exec WorkingDirectory="../Frontend" Command="pnpm i" />
     <Exec WorkingDirectory="../Frontend" Command="pnpm run build" />
   </Target>
