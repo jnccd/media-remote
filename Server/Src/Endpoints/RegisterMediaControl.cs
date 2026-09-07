@@ -64,6 +64,12 @@ public static class MediaControl
             return Results.Ok();
         });
 
+        app.MapPost("/backspace", [CustomAuthorize] () =>
+        {
+            SimulateFullKeyPress(KeyCode.VcBackspace);
+            return Results.Ok();
+        });
+
         app.MapPost("/stop", [CustomAuthorize] () =>
         {
             SimulateFullKeyPress(KeyCode.VcMediaStop);

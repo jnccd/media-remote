@@ -24,6 +24,7 @@ import {
 } from "./services/useMediaControlApi";
 import { PiPlayPauseFill } from "react-icons/pi";
 import {
+  MdBackspace,
   MdOutlineSpaceBar,
   MdSkipNext,
   MdSkipPrevious,
@@ -51,8 +52,8 @@ function App() {
   const handleMediaApiReq = async (route: string) => {
     postReqTo(
       route.replace(/[A-Z]/g, (match, offset) =>
-        offset === 0 ? match.toLowerCase() : `-${match.toLowerCase()}`
-      )
+        offset === 0 ? match.toLowerCase() : `-${match.toLowerCase()}`,
+      ),
     )
       .then((res) => {
         if (res instanceof Error) {
@@ -240,9 +241,9 @@ function App() {
                 width={"110px"}
                 height={"100px"}
                 borderRadius={"50%"}
-                onClick={() => handleMediaApiReq("play")}
+                onClick={() => handleMediaApiReq("space")}
               >
-                <PiPlayPauseFill size={70} />
+                <MdOutlineSpaceBar size={60} />
               </Button>
 
               <Button
@@ -259,13 +260,13 @@ function App() {
 
             <HStack height={"70px"}>
               <Button
-                height={"fit-content"}
-                borderRadius={"30%"}
-                onClick={() => handleMediaApiReq("previous")}
+                boxSize={"56px"}
+                borderRadius={"full"}
+                marginRight={"28px"}
+                onClick={() => handleMediaApiReq("backspace")}
               >
-                <MdSkipPrevious size={40} />
+                <MdBackspace size={40} />
               </Button>
-              <Box width={"20px"}></Box>
               <Button
                 width={"80px"}
                 height={"120px"}
@@ -277,7 +278,24 @@ function App() {
               >
                 <GrFormPrevious size={60} />
               </Button>
-              <Box width={"20px"}></Box>
+              <Box width={"92px"}></Box>
+            </HStack>
+
+            <HStack>
+              <Button
+                height={"fit-content"}
+                borderRadius={"30%"}
+                onClick={() => handleMediaApiReq("previous")}
+              >
+                <MdSkipPrevious size={40} />
+              </Button>
+              <Button
+                height={"fit-content"}
+                borderRadius={"30%"}
+                onClick={() => handleMediaApiReq("play")}
+              >
+                <PiPlayPauseFill size={40} />
+              </Button>
               <Button
                 height={"fit-content"}
                 borderRadius={"30%"}
@@ -292,18 +310,11 @@ function App() {
               height={!wideLayoutActive ? "fit-content" : "0px"}
             >
               <Button
-                height={"50px"}
-                paddingX={3}
-                onClick={() => handleMediaApiReq("space")}
-              >
-                <MdOutlineSpaceBar size={60} />
-              </Button>
-              <Button
                 height={"fit-content"}
-                paddingX={0}
+                borderRadius={"30%"}
                 onClick={() => handleMediaApiReq("stop")}
               >
-                <MdStop size={60} />
+                <MdStop size={40} />
               </Button>
             </VStack>
 
@@ -322,18 +333,11 @@ function App() {
             padding={6}
           >
             <Button
-              height={"50px"}
-              paddingX={3}
-              onClick={() => handleMediaApiReq("space")}
-            >
-              <MdOutlineSpaceBar size={60} />
-            </Button>
-            <Button
               height={"fit-content"}
-              paddingX={0}
+              borderRadius={"30%"}
               onClick={() => handleMediaApiReq("stop")}
             >
-              <MdStop size={60} />
+              <MdStop size={40} />
             </Button>
           </VStack>
         </HStack>
