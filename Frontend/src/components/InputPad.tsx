@@ -85,6 +85,8 @@ export default function InputPad({ password }: { password: string }) {
           border="1px solid"
           borderColor="gray.600"
           borderRadius="md"
+          borderTopRightRadius={0}
+          borderBottomRightRadius={0}
         />
         <VStack
           width="24px"
@@ -97,7 +99,9 @@ export default function InputPad({ password }: { password: string }) {
             height="60px"
             width="24px"
             minWidth="24px"
+            borderTopLeftRadius={0}
             borderBottomLeftRadius={0}
+            borderBottomRightRadius={0}
             onClick={() => click("right")}
           >
             R
@@ -107,6 +111,8 @@ export default function InputPad({ password }: { password: string }) {
             width="24px"
             minWidth="24px"
             borderTopLeftRadius={0}
+            borderBottomLeftRadius={0}
+            borderTopRightRadius={0}
             onClick={() => click("middle")}
           >
             M
