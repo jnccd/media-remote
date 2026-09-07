@@ -66,62 +66,77 @@ export default function InputPad({ password }: { password: string }) {
 
   return (
     <HStack gap={3} marginTop={3}>
-      {/* Mouse cluster: touchpad with the R/M leave buttons flush beside it. */}
+      {/* Mouse cluster: touchpad with R/M buttons flush beside it, filling its height. */}
       <HStack spacing={0} align="flex-start">
-        <VStack gap={1}>
-          <Box
-            data-testid="touchpad"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onWheel={onWheel}
-            style={{
-              touchAction: "none",
-              userSelect: "none",
-              cursor: "crosshair",
-            }}
-            width={180}
-            height={120}
-            bg="gray.800"
-            border="1px solid"
-            borderColor="gray.600"
-            borderRadius="md"
-          />
-          <Text fontSize="sm" color={ready ? "green.400" : "red.400"}>
-            {ready ? "⚡ live" : error ? error : "connecting…"}
-          </Text>
-        </VStack>
-
-        {/* Mouse buttons stacked to fill the touchpad's height, no gap between them. */}
-        <VStack height={120} spacing={0}>
-          <Button flex={1} width={48} onClick={() => click("right")}>
+        <Box
+          data-testid="touchpad"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onWheel={onWheel}
+          style={{
+            touchAction: "none",
+            userSelect: "none",
+            cursor: "crosshair",
+          }}
+          width="180px"
+          height="120px"
+          bg="gray.800"
+          border="1px solid"
+          borderColor="gray.600"
+          borderRadius="md"
+        />
+        <VStack
+          width="24px"
+          minWidth="24px"
+          gap={"1px"}
+          marginLeft={"4px"}
+          spacing={0}
+        >
+          <Button
+            height="60px"
+            width="24px"
+            minWidth="24px"
+            borderBottomLeftRadius={0}
+            onClick={() => click("right")}
+          >
             R
           </Button>
-          <Button flex={1} width={48} onClick={() => click("middle")}>
+          <Button
+            height="60px"
+            width="24px"
+            minWidth="24px"
+            borderTopLeftRadius={0}
+            onClick={() => click("middle")}
+          >
             M
           </Button>
         </VStack>
       </HStack>
 
-      <Input
-        value={text}
-        onChange={(e) => {
-          const v = e.target.value;
-          if (v) typeText(v);
-          setText("");
-        }}
-        onKeyDown={(e) => {
-          // Forward control keys that aren't printable text to the host.
-          if (e.key === "Backspace") {
-            e.preventDefault();
-            pressKey("Backspace");
-          }
-        }}
-        placeholder="type…"
-        width={150}
-        size="md"
-        autoComplete="off"
-      />
+      <VStack gap={2} width="100px">
+        <Input
+          value={text}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v) typeText(v);
+            setText("");
+          }}
+          onKeyDown={(e) => {
+            // Forward control keys that aren't printable text to the host.
+            if (e.key === "Backspace") {
+              e.preventDefault();
+              pressKey("Backspace");
+            }
+          }}
+          placeholder="type…"
+          size="md"
+          autoComplete="off"
+        />
+        <Text fontSize="sm" color={ready ? "green.400" : "red.400"}>
+          {ready ? "⚡ live" : error ? error : "connecting…"}
+        </Text>
+      </VStack>
     </HStack>
   );
 }
