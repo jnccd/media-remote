@@ -63,6 +63,53 @@ pub fn run() {
 
 /// Returns (program, args, cwd). In a dev build we run `dotnet run -c Debug` from the
 /// repository's Server directory (overridable via MEDIA_SERVER_DIR); in a release build we
+/// Locates the bundled server binary.
+///
+/// Order matters:
+///   1. `MEDIA_CONTROL_SERVER` - an explicit override, useful in dev and for a
+///      system-wide install that ships the server separately.
+///   2. next to the running executable - this is how a Nix package works: the
+///      app is `$out/bin/media-control-desktop` and the server is installed
+///      alongside it. Tauri's `resource_dir()` is not useful there because a Nix
+///      package has no macOS-style `Resources/` directory, so it points at the
+///      store root and the server is never found.
+///   3. the Tauri resource dir - the bundled installer layout (deb/rpm/AppImage).
+fn find_bundled_server(app: &AppHandle, exe_name: &str) -> Option<std::path::PathBuf> {
+    if let Ok(explicit) = std::env::var("MEDIA_CONTROL_SERVER") {
+        let p = std::path::PathBuf::from(explicit);
+        if p.exists() {
+            return Some(p);
+        }
+    }
+
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            for candidate in [dir.join(exe_name), dir.join("server").join(exe_name)] {
+                if candidate.exists() {
+                    return Some(candidate);
+                }
+            }
+        }
+    }
+
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        // `resources/{from: "resources/server", to: "server"}` -> <res>/server/<exe>
+        // Older/alternative layouts: <res>/resources/server/<exe>, <res>/<exe>.
+        for base in [
+            resource_dir.join("server"),
+            resource_dir.join("resources").join("server"),
+            resource_dir.clone(),
+        ] {
+            let exe = base.join(exe_name);
+            if exe.exists() {
+                return Some(exe);
+            }
+        }
+    }
+
+    None
+}
+
 /// run the self-contained binary bundled as a resource. The resource layout depends on how
 /// the bundler mapped `bundle.resources`, so we probe a few candidate locations.
 fn server_command(app: &AppHandle) -> (String, Vec<String>, Option<String>) {
@@ -81,30 +128,14 @@ fn server_command(app: &AppHandle) -> (String, Vec<String>, Option<String>) {
             "MediaControlServer"
         };
 
-        if let Ok(resource_dir) = app.path().resource_dir() {
-            // `resources/{from: "resources/server", to: "server"}` -> <res>/server/<exe>
-            // Older/alternative layouts: <res>/resources/server/<exe>, <res>/<exe>.
-            let candidates = [
-                resource_dir.join("server"),
-                resource_dir.join("resources").join("server"),
-                resource_dir.clone(),
-            ];
-            for base in &candidates {
-                let exe = base.join(exe_name);
-                if exe.exists() {
-                    // Run the server from its own directory so its content root (and thus
-                    // the bundled Frontend/dist + appsettings.json) resolve correctly.
-                    let cwd = exe.parent().map(|p| p.to_string_lossy().to_string());
-                    return (exe.to_string_lossy().to_string(), Vec::new(), cwd);
-                }
-            }
-            // Fall back to the most likely location; spawn will surface a clear error.
-            let exe = candidates[0].join(exe_name);
+        if let Some(exe) = find_bundled_server(app, exe_name) {
+            // Run the server from its own directory so its content root (and thus
+            // the Frontend/dist + appsettings.json next to it) resolve correctly.
             let cwd = exe.parent().map(|p| p.to_string_lossy().to_string());
             return (exe.to_string_lossy().to_string(), Vec::new(), cwd);
         }
 
-        // No resource dir (shouldn't happen); try the bundled name directly.
+        // Nothing found: fall back to the bare name so the spawn error is clear.
         (exe_name.to_string(), Vec::new(), None)
     }
 }
