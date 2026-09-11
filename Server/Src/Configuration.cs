@@ -58,10 +58,11 @@ public static class Configuration
         var logger = app.Services.GetService(typeof(LoggerService)) as LoggerService;
 
         // CORS is required in all environments: the remote UI may be opened same-origin
-        // (localhost:7779) or cross-origin (a dev server on :5173, or a different host), and
-        // the Authorization header makes those cross-origin requests trigger a CORS preflight.
+        // (localhost:7779), through the Tauri webview (the asset protocol origin), or
+        // cross-origin from a dev server / another host. The Authorization header makes
+        // those cross-origin requests trigger a CORS preflight. See IsAllowedOrigin.
         app.UseCors(policy => policy
-            .WithOrigins("http://localhost:5173", "http://pc-ryzen:7779", "http://localhost:7779", "http://0.0.0.0:7779")
+            .SetIsOriginAllowed(IsAllowedOrigin)
             .AllowAnyMethod()
             .AllowAnyHeader());
 
@@ -88,6 +89,40 @@ public static class Configuration
         });
 
         builder.Services.AddCors();
+    }
+
+    /// <summary>
+    /// Which page origins may call this API.
+    ///
+    /// The browser cases are same-origin (the server serves the UI) or the Vite
+    /// dev server; LAN clients reach it by LAN address. The desktop wrapper is
+    /// the awkward one: its webview serves the page from Tauri's own asset
+    /// protocol, so requests are cross-origin and the Origin header is
+    /// `tauri://localhost` or `http://tauri.localhost` depending on platform.
+    /// Those are accepted, plus any localhost/private address so the app keeps
+    /// working from a phone or another PC on the network.
+    /// </summary>
+    private static bool IsAllowedOrigin(string origin)
+    {
+        if (string.IsNullOrEmpty(origin)) return true; // same-origin / non-browser client
+
+        // Tauri's asset protocol: tauri://localhost (macOS) or
+        // http://tauri.localhost (Linux/Windows).
+        if (origin.StartsWith("tauri://", StringComparison.OrdinalIgnoreCase) ||
+            origin.Contains("tauri.localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri)) return false;
+
+        if (uri.Host is "localhost" or "127.0.0.1" or "0.0.0.0" or "::1") return true;
+
+        // Private LAN ranges, so a phone pointing at http://<host>:7779 works.
+        var host = uri.Host;
+        return host.StartsWith("10.") ||
+               host.StartsWith("192.168.") ||
+               System.Text.RegularExpressions.Regex.IsMatch(host, @"^172\.(1[6-9]|2[0-9]|3[01])\.");
     }
 
     // // Enable if HTTPS is needed

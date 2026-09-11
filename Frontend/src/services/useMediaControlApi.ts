@@ -1,13 +1,12 @@
 import axios from "axios";
 import { getAuthHeaderForMediaControlAPI } from "./useEncryption";
+import { serverOrigin } from "./serverAddress";
 
-// In dev the frontend runs on a different origin (Vite dev server) than the backend, so we
-// allow a VITE_DEV_BACKEND_ADDRESS override. In a production build (e.g. when the server
-// serves its own frontend) we always use the same origin the page was loaded from.
-export const baseUrl =
-  import.meta.env.DEV && import.meta.env.VITE_DEV_BACKEND_ADDRESS
-    ? import.meta.env.VITE_DEV_BACKEND_ADDRESS
-    : window.location.href;
+// The page origin is only the server when the page was *served by* the server.
+// In the Tauri wrapper the webview serves the page itself, so `window.location`
+// is the asset origin and relative URLs never reach the server. serverAddress.ts
+// picks the right base for each context.
+export const baseUrl = serverOrigin;
 export const axiosClient = axios.create({
   baseURL: baseUrl,
   withCredentials: false,

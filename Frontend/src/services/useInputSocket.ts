@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getAuthHeaderForMediaControlAPI } from "./useEncryption";
+import { serverWebSocketUrl } from "./serverAddress";
 
 export type MouseButtonName = "left" | "right" | "middle";
 
@@ -27,8 +28,10 @@ export function useInputSocket(password: string | null) {
 
     const connect = () => {
       if (disposed) return;
-      const proto = window.location.protocol === "https:" ? "wss" : "ws";
-      const ws = new WebSocket(`${proto}://${window.location.host}/inputws`);
+      // Absolute, not window.location: under Tauri the page origin is the
+      // webview's asset protocol, so a host-relative URL would open a socket
+      // back into the webview instead of to the server.
+      const ws = new WebSocket(serverWebSocketUrl("/inputws"));
       wsRef.current = ws;
 
       ws.onopen = async () => {

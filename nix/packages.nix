@@ -59,7 +59,7 @@ let
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-ttSxdDdfBt6fBzaEZHNMzjUAFx+Z0N3kq1ME+hqmKPA=";
+    outputHash = "sha256-LdutMIJczzutCFhElfcS11fhD9sMLbMX2ut22r2c75Y=";
 
     meta = {
       description = "MediaControl web remote (React/Vite SPA)";
