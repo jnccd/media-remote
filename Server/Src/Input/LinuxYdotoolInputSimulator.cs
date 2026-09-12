@@ -67,26 +67,46 @@ public sealed class LinuxYdotoolInputSimulator : IInputSimulator
 
     public async Task MoveMouseAsync(int dx, int dy)
     {
-        await RunAsync("ydotool", new[] { "mousemove", "--relative", $"--x={dx}", $"--y={dy}" });
+        // `mousemove` reads its two coordinates from -x/-y and is RELATIVE unless
+        // --absolute is given. The previous form (--relative --x=5 --y=3) did in
+        // fact work, but only by accident: getopt_long matches long options by
+        // unambiguous prefix, so --x=5 resolved to xpos and --y=3 to ypos, while
+        // the unknown --relative was just warned about and skipped. Nothing
+        // guaranteed that, so use the documented short form. mousemove also
+        // insists on exactly two values, so both axes are always sent.
+        await RunAsync("ydotool", new[] { "mousemove", "-x", dx.ToString(), "-y", dy.ToString() });
     }
 
     public async Task ClickAsync(MouseButton button)
     {
-        var buttonNum = button switch
+        // ydotool encodes a button as a HEXADECIMAL number in the low nibble plus
+        // an optional press/release bit mask: 0x40 = down, 0x80 = up.
+        //
+        // The mask is not really optional: a bare `click 1` parses as 0x01, which
+        // matches neither 0x40 nor 0x80, so ydotool emits no event whatsoever -
+        // every click silently did nothing while still exiting 0. 0xC<n> is
+        // down-then-up inside a single invocation (ydotool spaces them with its
+        // 25ms --next-delay default), which also avoids leaving a button held
+        // down if a second, separate call were ever to fail.
+        var buttonBits = button switch
         {
-            MouseButton.Left => "1",
-            MouseButton.Middle => "2",
-            MouseButton.Right => "3",
+            MouseButton.Left => 0x0,
+            MouseButton.Right => 0x1,
+            MouseButton.Middle => 0x2,
             _ => throw new ArgumentOutOfRangeException(nameof(button)),
         };
-        await RunAsync("ydotool", new[] { "click", buttonNum });
+        await RunAsync("ydotool", new[] { "click", $"0x{0xC0 | buttonBits:X2}" });
     }
 
     public async Task ScrollAsync(int delta)
     {
-        // delta > 0 => scroll up, delta < 0 => scroll down.
-        var dir = delta >= 0 ? "--up" : "--down";
-        await RunAsync("ydotool", new[] { "scroll", dir, Math.Abs(delta).ToString() });
+        // ydotool 1.x has no `scroll` command at all, so the previous
+        // "scroll --up/--down" invocation failed with "Unknown command: scroll"
+        // and scrolling never worked. The wheel is driven through
+        // `mousemove --wheel`, where the y axis is REL_WHEEL and x is REL_HWHEEL.
+        // A positive REL_WHEEL scrolls up, which matches this method's contract
+        // that delta > 0 scrolls up.
+        await RunAsync("ydotool", new[] { "mousemove", "--wheel", "-x", "0", "-y", delta.ToString() });
     }
 
     public void Dispose() { }
