@@ -1,5 +1,6 @@
 using System.Net;
 using System.Reflection;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Server.Input;
 using Server.Services;
 using NSwag;
@@ -82,7 +83,14 @@ public static class Configuration
         //X509Certificate2 x509 = GetCertificateFromConfig(builder);
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.Listen(IPAddress.Any, port, listenOptions =>
+            // ListenAnyIP binds IPv4 *and* IPv6. Binding IPAddress.Any (0.0.0.0)
+            // alone serves IPv4 only, which makes a perfectly healthy server look
+            // dead to anything that prefers IPv6: `localhost` resolves to ::1
+            // first (/etc/hosts) so the Tauri webview gets ECONNREFUSED, and LAN
+            // clients holding a global IPv6 address (this host has 2a03:... and a
+            // ULA on wlo1) never reach it either. Both showed up as "the server is
+            // only reachable from this machine itself".
+            options.ListenAnyIP(port, listenOptions =>
             {
                 //listenOptions.UseHttps(x509);
             });
