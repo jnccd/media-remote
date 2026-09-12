@@ -26,7 +26,24 @@ public static class RegisterMiddlewareExtensions
             }
             catch (Exception e)
             {
+                // Log it, but do NOT swallow it. Swallowing here turned every
+                // failed input injection into an empty HTTP 200, which is how
+                // "the button says it worked but nothing happens" happened: the
+                // endpoint threw (e.g. ydotool missing), this catch logged the
+                // stack trace, and the client still saw 200 OK.
                 logger?.WriteLine(e);
+
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.Clear();
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = e.Message,
+                        type = e.GetType().Name,
+                    });
+                }
             }
         });
     }
