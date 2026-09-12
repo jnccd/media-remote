@@ -10,6 +10,14 @@ namespace Server.Input;
 /// </summary>
 public sealed class LinuxYdotoolInputSimulator : IInputSimulator
 {
+    /// <summary>
+    /// Gap between the injected key-down and key-up. If this is too small the
+    /// compositor can miss the press before the release arrives, which shows up
+    /// as a key that "did nothing"; too small in the other direction leaves the
+    /// key held and key-repeating. 60ms is enough in practice.
+    /// </summary>
+    private const int KeyDownToUpDelayMs = 60;
+
     // evdev keycodes from <linux/input-event-codes.h>.
     private static readonly IReadOnlyDictionary<SimKey, string> Keycodes = new Dictionary<SimKey, string>
     {
@@ -33,9 +41,21 @@ public sealed class LinuxYdotoolInputSimulator : IInputSimulator
     public async Task PressAsync(SimKey key)
     {
         var code = Keycodes[key];
-        // ydotool 'key' does a press + release by default. The ':1'/':0' form is used for
-        // chords/holds; a bare keycode is a single press+release.
-        await RunAsync("ydotool", new[] { "key", code });
+
+        // Send the press and the release as SEPARATE ydotool invocations rather
+        // than the bare `key <code>` form, which is documented as press+release
+        // but in practice drops the release: the key stays down, the kernel
+        // key-repeats it, and a volume press turns into the volume climbing
+        // forever until another key event arrives.
+        //
+        // `type` does its own per-character press/release and works, so the
+        // events themselves are fine - it is specifically the release of a bare
+        // `key` that does not land. The explicit ':1' (down) / ':0' (up) form
+        // does, and the gap between the two calls gives the compositor a chance
+        // to process the down before the up.
+        await RunAsync("ydotool", new[] { "key", $"{code}:1" });
+        await Task.Delay(KeyDownToUpDelayMs);
+        await RunAsync("ydotool", new[] { "key", $"{code}:0" });
     }
 
     public async Task TypeTextAsync(string text)
