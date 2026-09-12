@@ -68,14 +68,21 @@
         ];
       in
       {
-        # `nix build` / `nix build .#` -> the desktop wrapper.
+        # `nix build` / `nix build .#` -> the desktop wrapper (Avalonia now; the
+        # Tauri one is still buildable as `.#desktop` but nothing builds it).
         packages = {
-          default = packages.desktop;
-          inherit (packages) frontend server server-with-ui desktop;
+          default = packages.desktop-app;
+          inherit (packages) frontend server server-with-ui desktop desktop-app;
         };
 
         # Unchanged default: the server + frontend tooling from shell.nix.
         devShells.default = (import ./shell.nix { inherit pkgs; }).default;
+
+        # The Avalonia wrapper's shell: the default plus the native libraries
+        # SkiaSharp dlopen()s. `nix develop .#desktop` is what the GUI autostart
+        # enters so the client can build the app from source, the same way the
+        # notes and music-player apps do.
+        devShells.desktop = (import ./shell.nix { inherit pkgs; }).desktop;
 
         # Everything the desktop wrapper needs on top of that. Use this for
         # `npm --prefix desktop run tauri dev/build`.

@@ -1,0 +1,8 @@
+# pnpm 10 does not run a dependency's build scripts unless it is approved, and
+# esbuild (used by Vite) needs its postinstall to lay down the native binary.
+# Without this, `pnpm install` reports ERR_PNPM_IGNORED_BUILDS and exits
+# non-zero, which breaks `dotnet build -c Release Server` for anyone who is not
+# going through the Nix frontend derivation - that one writes its own equivalent
+# of this file by hand for exactly the same reason.
+allowBuilds:
+  esbuild: true

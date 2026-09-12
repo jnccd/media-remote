@@ -1,6 +1,13 @@
 {
   pkgs ? import <nixpkgs> { },
   lib ? pkgs.lib,
+  # Which project to resolve. Defaults to the server; pass the desktop app with
+  #   nix-build -E 'import ./nix/fetch-nuget-deps.nix {
+  #     src = ./DesktopApp; projectFile = "DesktopApp.csproj";
+  #     name = "media-control-desktop-nuget-deps"; }'
+  src ? ../Server,
+  projectFile ? "Server.csproj",
+  name ? "media-control-nuget-deps",
 }:
 
 # Generates nix/deps.json for nix/packages.nix (buildDotnetModule's `nugetDeps`).
@@ -11,7 +18,7 @@
 # Explicitly uses the user's populated ~/.nuget/packages as the package source
 # and nuget-to-json (nuget-to-nix was removed in nixpkgs 26.05).
 pkgs.stdenv.mkDerivation {
-  name = "media-control-nuget-deps";
+  inherit name;
 
   nativeBuildInputs = with pkgs; [
     dotnetCorePackages.sdk_8_0
@@ -19,10 +26,7 @@ pkgs.stdenv.mkDerivation {
     cacert
   ];
 
-  # Server project (with the build-time frontend target disabled).
-  # `dotnet restore` is run against "$src" directly rather than relying on an
-  # unpacked build directory.
-  src = ../Server;
+  inherit src;
 
   buildCommand = ''
     export HOME=$TMPDIR
@@ -59,7 +63,7 @@ pkgs.stdenv.mkDerivation {
     </configuration>
     NUGET
 
-    dotnet restore Server.csproj \
+    dotnet restore ${projectFile} \
       -p:BuildFrontend=false \
       -p:RestoreSources="https://api.nuget.org/v3/index.json" \
       --ignore-failed-sources

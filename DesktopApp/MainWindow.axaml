@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DesktopApp.MainWindow"
+        Title="Media Remote"
+        Width="820" Height="500"
+        Icon="/Assets/icon.png">
+
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10" Spacing="10">
+      <TextBlock x:Name="StatusText" VerticalAlignment="Center" />
+      <Button x:Name="ClearButton" Content="Clear log" Click="OnClearClicked" />
+    </StackPanel>
+
+    <!-- The server's stdout/stderr. Read-only and monospaced: this is a log
+         view, not an editor. -->
+    <TextBox x:Name="LogBox"
+             IsReadOnly="True"
+             AcceptsReturn="True"
+             TextWrapping="NoWrap"
+             FontFamily="monospace"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+  </DockPanel>
+
+</Window>

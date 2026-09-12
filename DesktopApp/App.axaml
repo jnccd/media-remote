@@ -1,0 +1,26 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DesktopApp.App">
+
+  <Application.Styles>
+    <FluentTheme />
+  </Application.Styles>
+
+  <!-- The tray icon is the app's real surface: the window is just the log view,
+       and closing it hides rather than exits. -->
+  <TrayIcon.Icons>
+    <TrayIcons>
+      <TrayIcon Icon="/Assets/icon.png" ToolTipText="Media Remote">
+        <TrayIcon.Menu>
+          <NativeMenu>
+            <NativeMenuItem Header="Show window" Click="OnShowClicked" />
+            <NativeMenuItem Header="Open web UI" Click="OnOpenWebClicked" />
+            <NativeMenuItemSeparator />
+            <NativeMenuItem Header="Quit" Click="OnQuitClicked" />
+          </NativeMenu>
+        </TrayIcon.Menu>
+      </TrayIcon>
+    </TrayIcons>
+  </TrayIcon.Icons>
+
+</Application>

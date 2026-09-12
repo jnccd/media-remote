@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Exe, not WinExe, on purpose: this wrapper forwards the MediaControlServer's
+         stdout/stderr to its own, so the autostart screen session
+         (`screen -r gui-media-remote-...`) shows the server's log instead of an
+         empty window. WinExe is the Avalonia default and would only matter on
+         Windows anyway. -->
+    <OutputType>Exe</OutputType>
+
+    <!-- The flake installs this name into $out/bin, and nixos-config's autostart
+         launches exactly that path. -->
+    <AssemblyName>media-control-desktop</AssemblyName>
+    <RootNamespace>DesktopApp</RootNamespace>
+
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/**" />
+  </ItemGroup>
+
+</Project>

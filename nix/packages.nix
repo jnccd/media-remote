@@ -280,10 +280,97 @@ let
       mainProgram = "media-control-desktop";
     };
   });
+
+  # --- Desktop wrapper (Avalonia UI) ---------------------------------------
+  # The current wrapper and the flake default. Same job as `desktop` above -
+  # spawn the bundled server, live in the tray, show its log - but as an
+  # ordinary .NET app: no webview, no Rust toolchain, and a build measured in
+  # seconds rather than minutes. That matters here because the autostart
+  # rebuilds from source on every new commit.
+  desktop-app = pkgs.buildDotnetModule {
+    pname = "media-control-desktop";
+    inherit version;
+
+    src = lib.cleanSourceWith {
+      src = ../DesktopApp;
+      # A local build tree must never leak into the derivation: DesktopApp/bin is
+      # ~127M and would otherwise make the output depend on whatever happened to
+      # be built last in the working copy.
+      filter = path: _: !(builtins.elem (baseNameOf path) [ "bin" "obj" ]);
+    };
+
+    projectFile = "DesktopApp.csproj";
+    # Must match <TargetFramework>net8.0</TargetFramework> in DesktopApp.csproj.
+    dotnet-sdk = pkgs.dotnetCorePackages.sdk_8_0;
+    dotnet-runtime = pkgs.dotnetCorePackages.runtime_8_0;
+
+    selfContainedBuild = true;
+    runtimeId = "linux-x64";
+
+    # Regenerate after changing package references (the fetch script dumps
+    # whatever is in the NuGet cache, so publish first to pull the runtime
+    # packs that a self-contained build needs):
+    #   nix-build -E 'import ./nix/fetch-nuget-deps.nix {
+    #     src = ./DesktopApp; projectFile = "DesktopApp.csproj";
+    #     name = "media-control-desktop-nuget-deps"; }'
+    nugetDeps = ../nuget-deps-desktop.json;
+
+    # Avalonia renders through Skia, which dlopen()s libSkiaSharp.so at runtime;
+    # that in turn needs fontconfig/freetype and the X11/GL stack. Without these
+    # on LD_LIBRARY_PATH the app starts and then dies with "Unable to load shared
+    # library 'libSkiaSharp' ... libfontconfig.so.1: cannot open shared object".
+    runtimeDeps = with pkgs; [
+      fontconfig
+      freetype
+      libGL
+      harfbuzz
+      icu
+      zlib
+      libx11
+      libice
+      libsm
+      libxcb
+      libxrandr
+      libxi
+      libxcursor
+      libxext
+      libxrender
+      libxkbcommon
+    ];
+
+    # buildDotnetModule installs the published app under $out/lib/<pname>. This
+    # puts the executable in $out/bin and, more importantly, wraps it with the
+    # runtimeDeps LD_LIBRARY_PATH - which is what makes libSkiaSharp's
+    # fontconfig/freetype/X11 dependencies resolvable.
+    executables = [ "media-control-desktop" ];
+
+    postInstall = ''
+      mkdir -p $out/bin
+      # The app probes for MediaControlServer next to its own executable (see
+      # ServerProcess.LocateServer). $out/bin/media-control-desktop is a
+      # makeWrapper script that execs the real binary in $out/lib/<pname>, so
+      # Environment.ProcessPath - and therefore the directory that gets probed -
+      # is the lib one, not bin. Link the server there, and in bin as well so it
+      # is also on PATH. A symlink into the server package keeps that server's
+      # own Frontend/dist and native libraries resolvable.
+      ln -s ${server-with-ui}/lib/media-control-server/Server $out/lib/media-control-desktop/MediaControlServer
+      ln -s ${server-with-ui}/lib/media-control-server/Server $out/bin/MediaControlServer
+    '';
+
+    meta = {
+      description = "MediaControl desktop wrapper (Avalonia tray app + bundled server)";
+      license = lib.licenses.mit;
+      platforms = lib.platforms.linux;
+      mainProgram = "media-control-desktop";
+    };
+  };
 in
 {
-  inherit frontend server server-with-ui desktop;
+  inherit frontend server server-with-ui desktop desktop-app;
 
-  # The desktop wrapper is the thing users install.
-  default = desktop;
+  # The Avalonia wrapper is the thing users install. The Tauri one stays
+  # buildable as `nix build .#desktop` until the new one has proven itself, but
+  # nothing builds it any more - which is the point, since its Rust build was
+  # the slow part.
+  default = desktop-app;
 }
