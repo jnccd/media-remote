@@ -13,6 +13,12 @@ public partial class MainWindow : Window
     private readonly List<string> _lines = [];
 
     /// <summary>
+    /// Bumped by every HideToTray/ShowFromTray; a scheduled hide only fires while
+    /// its token is still current. See HideToTray.
+    /// </summary>
+    private int _hideToken;
+
+    /// <summary>
     /// Set by the tray's Quit so the window really closes. Otherwise closing
     /// hides it - the tray icon is the app's real surface.
     /// </summary>
@@ -38,6 +44,10 @@ public partial class MainWindow : Window
 
     public void ShowFromTray()
     {
+        // Cancel any hide still pending from HideToTray, so a restore inside its
+        // delay window is not undone a moment later.
+        _hideToken++;
+
         Show();
 
         // Belt and braces for AvaloniaUI/Avalonia#11850: if the window ever did
@@ -80,30 +90,42 @@ public partial class MainWindow : Window
     /// Minimizing means "hide to the tray", the same as closing: the tray icon is
     /// this app's real surface and the window is only an on-demand log view.
     /// ShowFromTray is the way back.
-    ///
-    /// The WindowState is cleared here, while the window is already hidden,
-    /// rather than on the way back in. Minimizing leaves it at Minimized, and on
-    /// Linux a later Minimized -> Normal transition is what freezes the window
-    /// (AvaloniaUI/Avalonia#11850), so doing it out of sight keeps the restore
-    /// path a plain Show() with no state transition left to go wrong.
     /// </summary>
     private void HideToTray()
     {
-        // Order and timing both matter, and getting either wrong produces a
-        // broken window - both failure modes were reproduced under Xvfb+kwin_x11:
+        // Order and timing both matter, and every wrong combination was
+        // reproduced on this machine's real stack (XWayland under KWin Wayland),
+        // watching what the window manager sees across three minimize cycles:
         //
-        //   Hide() and then WindowState = Normal: the pending un-minimize re-maps
-        //     the window after the hide, so it stays on screen unpainted - a
-        //     see-through ghost that still drags by its border.
-        //   Hide() and leave the state Minimized: the window really does hide, but
-        //     restoring it later freezes outright (AvaloniaUI/Avalonia#11850).
+        //   Hide() then WindowState = Normal: the pending un-minimize re-maps the
+        //     window after the hide - a see-through ghost you can still drag.
+        //   Hide() while leaving the state Minimized: hides fine, but restoring it
+        //     later freezes outright (AvaloniaUI/Avalonia#11850).
+        //   Normal then Post(Hide, Background): works for the FIRST minimize, then
+        //     ghosts from the second onwards. Background work is starved while the
+        //     UI thread is busy, and this window is busy: every line the server
+        //     prints posts an Append.
+        //   Normal then a timer Hide: hidden on every cycle.
         //
-        // Clearing the state first makes the un-minimize land while the window is
-        // still up, and hiding on the NEXT dispatcher turn means it is not racing
-        // that transition. The window ends up hidden with its state already
-        // Normal, so showing it again is a plain Show() with no state change.
+        // So clear the state first, so the un-minimize lands while the window is
+        // still up, and hide from a timer rather than a Background post. The
+        // window ends up hidden with its state already Normal, which keeps the
+        // restore path a plain Show() with no state transition.
         WindowState = WindowState.Normal;
-        Dispatcher.UIThread.Post(Hide, DispatcherPriority.Background);
+
+        // The token cancels a pending hide if the tray restores the window first,
+        // so it cannot hide the window again from under the user.
+        var token = ++_hideToken;
+        foreach (var delay in new[] { 500, 1500 })
+        {
+            DispatcherTimer.RunOnce(
+                () =>
+                {
+                    if (_hideToken == token)
+                        Hide();
+                },
+                TimeSpan.FromMilliseconds(delay));
+        }
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
