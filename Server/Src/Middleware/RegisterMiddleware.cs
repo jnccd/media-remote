@@ -26,6 +26,15 @@ public static class RegisterMiddlewareExtensions
             }
             catch (Exception e)
             {
+                // A client that goes away mid-request - the UI navigating off, a
+                // phone losing wifi, an app being killed - aborts the request, which
+                // surfaces here as a cancellation. Nothing failed on our side and
+                // there is nobody left to answer, so this is not worth a stack
+                // trace. (The websocket endpoint already handles its own case; this
+                // covers every ordinary request that gets abandoned.)
+                if (e is OperationCanceledException && context.RequestAborted.IsCancellationRequested)
+                    return;
+
                 // Log it, but do NOT swallow it. Swallowing here turned every
                 // failed input injection into an empty HTTP 200, which is how
                 // "the button says it worked but nothing happens" happened: the

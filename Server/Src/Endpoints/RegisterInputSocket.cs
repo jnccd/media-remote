@@ -42,32 +42,88 @@ public static class InputSocket
                 return;
             }
 
-            using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
             var ct = context.RequestAborted;
             var expectedPassword = config["PASSWORD"] ?? "pass";
+            WebSocket? webSocket = null;
 
-            // First message must be an auth request; reject otherwise.
-            var first = await ReceiveTextAsync(webSocket, ct);
-            var auth = ParseMessage(first);
-            if (auth?.Type != "auth" || !AuthMiddleware.IsAuthorized(auth.Authorization ?? string.Empty, expectedPassword))
+            try
             {
-                await SendJsonAsync(webSocket, new { type = "error", message = "unauthorized" }, ct);
-                await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "unauthorized", ct);
-                return;
+                webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+                // First message must be an auth request; reject otherwise.
+                var first = await ReceiveTextAsync(webSocket, ct);
+                var auth = ParseMessage(first);
+                if (auth?.Type != "auth" || !AuthMiddleware.IsAuthorized(auth.Authorization ?? string.Empty, expectedPassword))
+                {
+                    await SendJsonAsync(webSocket, new { type = "error", message = "unauthorized" }, ct);
+                    await CloseQuietlyAsync(webSocket, WebSocketCloseStatus.PolicyViolation, "unauthorized");
+                    return;
+                }
+                await SendJsonAsync(webSocket, new { type = "ready" }, ct);
+
+                while (webSocket.State == WebSocketState.Open && !ct.IsCancellationRequested)
+                {
+                    var raw = await ReceiveTextAsync(webSocket, ct);
+                    if (raw is null)
+                        break;
+
+                    var msg = ParseMessage(raw);
+                    if (msg is not null)
+                        await HandleAsync(simulator, msg);
+                }
+
+                await CloseQuietlyAsync(webSocket, WebSocketCloseStatus.NormalClosure, "bye");
             }
-            await SendJsonAsync(webSocket, new { type = "ready" }, ct);
-
-            while (webSocket.State == WebSocketState.Open && !ct.IsCancellationRequested)
+            catch (Exception ex) when (IsClientDisconnect(ex))
             {
-                var raw = await ReceiveTextAsync(webSocket, ct);
-                if (raw is null)
-                    break;
-
-                var msg = ParseMessage(raw);
-                if (msg is not null)
-                    await HandleAsync(simulator, msg);
+                // Swallowed on purpose: this is the UI tab closing, a phone losing
+                // wifi, or the wrapper being killed, not a fault here. There is
+                // nobody left to answer, and letting it escape would make the
+                // request-logging middleware log a full stack trace for it - the
+                // most common kind of log entry this endpoint produces.
+            }
+            finally
+            {
+                webSocket?.Dispose();
             }
         });
+    }
+
+    /// <summary>
+    /// Whether an exception is the client going away rather than something wrong on
+    /// our side. A dropped connection surfaces as a cancellation (the request token
+    /// is aborted) and/or as a WebSocket/socket-level failure, a disposed socket, or
+    /// an IO error, depending on how far the connection got.
+    /// </summary>
+    private static bool IsClientDisconnect(Exception ex) =>
+        ex is OperationCanceledException // includes TaskCanceledException, what an aborted request throws
+            or WebSocketException
+            or System.Net.Sockets.SocketException
+            or ObjectDisposedException
+            or IOException;
+
+    /// <summary>
+    /// Closes the socket without turning a client that is already gone into an
+    /// exception. CloseAsync waits for the peer's close frame, so a peer that
+    /// vanished (closed tab, lost wifi, killed process) makes it throw
+    /// TaskCanceledException/WebSocketException instead of returning; and by this
+    /// point the request token is usually cancelled already, which is the other way
+    /// the polite close turned into a logged stack trace. Hence the fresh, short
+    /// timeout rather than the request token.
+    /// </summary>
+    private static async Task CloseQuietlyAsync(WebSocket webSocket, WebSocketCloseStatus status, string description)
+    {
+        if (webSocket.State != WebSocketState.Open && webSocket.State != WebSocketState.CloseReceived)
+            return;
+
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        try
+        {
+            await webSocket.CloseAsync(status, description, timeout.Token);
+        }
+        catch (Exception ex) when (IsClientDisconnect(ex))
+        {
+        }
     }
 
     private static async Task HandleAsync(IInputSimulator sim, InputMessage m)
