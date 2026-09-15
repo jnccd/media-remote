@@ -8,3 +8,6 @@ node_modules/
 # .NET build output. DesktopApp/bin is ~127M and must never be committed.
 bin/
 obj/
+
+**/MediaControl.bat
+**/MediaRemote.bat

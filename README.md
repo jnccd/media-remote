@@ -13,3 +13,5 @@ The Server is supposed to go on the machine you watch media from.
 Due to advances in making everything simple as hell tech, you can just write `dotnet run -c Release` in the Server folder and it runs. The default password is pass, change the PASSWORD env var to something else for more security.
 
 If you have too much RAM you can also use the electron server wrapper, it does the same but looks fancier and hides in a tray icon.
+
+The Avalonia desktop wrapper is built and run from source with `./start_desktop_app.sh` on Linux/NixOS, or with `start_desktop_app.ps1` (`start_desktop_app.cmd` to double-click) on Windows. Both build the server, the frontend and the wrapper, then start the tray app.
