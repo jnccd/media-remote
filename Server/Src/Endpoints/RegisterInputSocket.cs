@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using Server.Helpers;
 using Server.Input;
 
 namespace Server.Endpoints;
@@ -14,13 +15,35 @@ namespace Server.Endpoints;
 /// because the buttons otherwise had to re-derive the AES token for every single press.
 ///
 /// Security model: the socket is authenticated once, up front, with the same token scheme as
-/// every HTTP endpoint. What it will do afterwards is limited to the message types handled in
-/// <see cref="HandleAsync"/> - notably, commands are looked up in the closed
-/// <see cref="RemoteCommands"/> set, so the socket offers no action the HTTP API did not
-/// already offer.
+/// every HTTP endpoint, and failed handshakes are throttled by the same
+/// <see cref="AuthFailureThrottle"/> the HTTP endpoints use. What an authenticated socket may
+/// do afterwards is limited to the message types handled in <see cref="HandleAsync"/> -
+/// notably, commands are looked up in the closed <see cref="RemoteCommands"/> set, so the
+/// socket offers no action the HTTP API did not already offer. Two bounds keep an
+/// *unauthenticated* client from parking resources here: how long the auth frame may take,
+/// and how large any single frame may be.
 /// </summary>
 public static class InputSocket
 {
+    /// <summary>
+    /// How long an accepted socket may wait for its auth frame. The UI sends one as soon as
+    /// the socket opens, but has to derive the token first - the slow part on a phone - so
+    /// this is generous. It only has to be finite: without a deadline an unauthenticated
+    /// client can hold sockets open indefinitely, which is the cheapest way to run this
+    /// server out of connections.
+    /// </summary>
+    private static readonly TimeSpan AuthTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// Largest frame accepted. Real frames are a few hundred bytes; the only variable-size
+    /// case is text pasted into the input pad, which is still well under this. Without a cap
+    /// the receive loop buffers whatever it is sent, for as long as it is sent.
+    /// </summary>
+    private const int MaxMessageBytes = 64 * 1024;
+
+    /// <summary>Signals a frame above <see cref="MaxMessageBytes"/>; only thrown and caught here.</summary>
+    private sealed class MessageTooLargeException : Exception { }
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -42,7 +65,7 @@ public static class InputSocket
 
     public static void RegisterInputSocketEndpoint(this WebApplication app)
     {
-        app.MapGet("/inputws", async (HttpContext context, IInputSimulator simulator, RemoteCommandDispatcher commands, IConfiguration config) =>
+        app.MapGet("/inputws", async (HttpContext context, IInputSimulator simulator, RemoteCommandDispatcher commands, AuthFailureThrottle throttle, IConfiguration config) =>
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
@@ -52,21 +75,44 @@ public static class InputSocket
 
             var ct = context.RequestAborted;
             var expectedPassword = config["PASSWORD"] ?? "pass";
+            var address = AuthFailureThrottle.AddressOf(context);
+
+            // Refuse the upgrade while this address is in auth backoff, for the same reason the
+            // HTTP path does: completing a handshake would answer the guess.
+            var retryAfter = throttle.RetryAfter(address);
+            if (retryAfter > TimeSpan.Zero)
+            {
+                context.Response.Headers["Retry-After"] = ((int)Math.Ceiling(retryAfter.TotalSeconds)).ToString();
+                context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                return;
+            }
+
             WebSocket? webSocket = null;
 
             try
             {
                 webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                // First message must be an auth request; reject otherwise.
-                var first = await ReceiveTextAsync(webSocket, ct);
+                // First message must be an auth request within AuthTimeout; reject otherwise.
+                var first = await ReceiveAuthFrameAsync(webSocket, ct);
+                if (first is null)
+                {
+                    // Closed, or nothing arrived in time. Neither is a password guess, so it is
+                    // not counted against the address - only real failures are.
+                    await CloseQuietlyAsync(webSocket, WebSocketCloseStatus.PolicyViolation, "no auth");
+                    return;
+                }
+
                 var auth = ParseMessage(first);
                 if (auth?.Type != "auth" || !AuthMiddleware.IsAuthorized(auth.Authorization ?? string.Empty, expectedPassword))
                 {
+                    throttle.RecordFailure(address);
                     await SendJsonAsync(webSocket, new { type = "error", message = "unauthorized" }, ct);
                     await CloseQuietlyAsync(webSocket, WebSocketCloseStatus.PolicyViolation, "unauthorized");
                     return;
                 }
+
+                throttle.RecordSuccess(address);
                 await SendJsonAsync(webSocket, new { type = "ready" }, ct);
 
                 while (webSocket.State == WebSocketState.Open && !ct.IsCancellationRequested)
@@ -90,11 +136,37 @@ public static class InputSocket
                 // request-logging middleware log a full stack trace for it - the
                 // most common kind of log entry this endpoint produces.
             }
+            catch (MessageTooLargeException)
+            {
+                // Nothing the UI sends comes close to the cap, so this is a client that is not
+                // the UI. It only costs the connection, and closing is cheaper than logging a
+                // fault for it.
+                if (webSocket is not null)
+                    await CloseQuietlyAsync(webSocket, WebSocketCloseStatus.MessageTooBig, "message too large");
+            }
             finally
             {
                 webSocket?.Dispose();
             }
         });
+    }
+
+    /// <summary>
+    /// The auth frame, waiting at most <see cref="AuthTimeout"/>. Null means the client closed
+    /// or never sent one; the caller treats both as "no auth, no socket".
+    /// </summary>
+    private static async Task<string?> ReceiveAuthFrameAsync(WebSocket webSocket, CancellationToken ct)
+    {
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(AuthTimeout);
+        try
+        {
+            return await ReceiveTextAsync(webSocket, timeout.Token);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            return null;
+        }
     }
 
     /// <summary>
@@ -219,6 +291,10 @@ public static class InputSocket
             result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
             if (result.MessageType == WebSocketMessageType.Close)
                 return null;
+            // Checked before writing, so a client streaming an endless frame cannot grow this
+            // buffer past the cap.
+            if (ms.Length + result.Count > MaxMessageBytes)
+                throw new MessageTooLargeException();
             ms.Write(buffer, 0, result.Count);
         } while (!result.EndOfMessage);
         return Encoding.UTF8.GetString(ms.ToArray());

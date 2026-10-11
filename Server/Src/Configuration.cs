@@ -83,6 +83,20 @@ public static class Configuration
         //X509Certificate2 x509 = GetCertificateFromConfig(builder);
         builder.WebHost.ConfigureKestrel(options =>
         {
+            // Backstop against connections accumulating without bound: a misbehaving client, a
+            // reconnect loop, or an unauthenticated client deciding to park sockets here. This
+            // is deliberately far above real use (a page's own requests plus one socket per
+            // device), because hitting the cap would itself deny service - it exists to bound
+            // resources, not to be a security boundary. Upgraded (WebSocket) connections are
+            // tracked by their own limit.
+            options.Limits.MaxConcurrentConnections = 200;
+            options.Limits.MaxConcurrentUpgradedConnections = 200;
+
+            // The only request bodies this server reads are auth tokens, a few hundred bytes
+            // each. The 30 MB default let an unauthenticated client make the auth middleware
+            // buffer a large body - and spill it to disk - on every attempt.
+            options.Limits.MaxRequestBodySize = 64 * 1024;
+
             // ListenAnyIP binds IPv4 *and* IPv6. Binding IPAddress.Any (0.0.0.0)
             // alone serves IPv4 only, which makes a perfectly healthy server look
             // dead to anything that prefers IPv6: `localhost` resolves to ::1

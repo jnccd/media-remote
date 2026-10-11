@@ -21,7 +21,7 @@ public static class RegisterMiddlewareExtensions
         {
             try
             {
-                logger?.WriteLine($"{context.Request.Method} {context.Request.Path}{context.Request.QueryString} - ORIGIN: {context.Request.Headers.Origin} - {{ {HttpHelpers.GetRequestBody(context.Request).Result} }}");
+                logger?.WriteLine($"{context.Request.Method} {context.Request.Path}{context.Request.QueryString} - ORIGIN: {context.Request.Headers.Origin} - {await DescribeBodyAsync(context)}");
                 await next.Invoke();
             }
             catch (Exception e)
@@ -55,5 +55,30 @@ public static class RegisterMiddlewareExtensions
                 }
             }
         });
+    }
+
+    /// <summary>
+    /// The body, for the log line.
+    ///
+    /// On a Release build an authenticated endpoint's body is nothing but the auth token, and
+    /// that is not written out: there is no reason to put a credential in log.txt, where it
+    /// outlives its usefulness and follows the log into every bug report or chat paste. (It is
+    /// only replayable inside its ~5s validity window, so this is hygiene rather than a live
+    /// hole - the path already says which button was pressed, and the body says nothing more.)
+    ///
+    /// Debug builds are the deliberate exception: they are for testing, with a throwaway
+    /// password, and are not the build that runs for days, so the raw body is the more useful
+    /// thing to have. That rests on how the builds are used rather than on anything the code
+    /// enforces - a Debug build run with the real password is the case this comment is
+    /// warning about.
+    /// </summary>
+    static async Task<string> DescribeBodyAsync(HttpContext context)
+    {
+#if !DEBUG
+        if (context.GetEndpoint()?.Metadata.GetMetadata<CustomAuthorizeAttribute>() is not null)
+            return "{ <authorization token redacted> }";
+#endif
+
+        return $"{{ {await HttpHelpers.GetRequestBody(context.Request)} }}";
     }
 }
