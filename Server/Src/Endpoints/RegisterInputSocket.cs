@@ -6,11 +6,18 @@ using Server.Input;
 namespace Server.Endpoints;
 
 /// <summary>
-/// Low-latency input channel for general mouse/keyboard control. The UI opens a WebSocket to
-/// /inputws and must authenticate with the same time-windowed token used by the HTTP endpoints
-/// (sent as the first message). After that it can send mouse move/click/scroll and keystrokes,
-/// which are all replayed on the host machine. WebSocket (not HTTP) is used because mouse
-/// movement needs to stream at high frequency.
+/// Low-latency control channel for the UI. The UI opens a WebSocket to /inputws and must
+/// authenticate with the same time-windowed token used by the HTTP endpoints (sent as the
+/// first message). After that it can send mouse move/click/scroll, keystrokes, and the
+/// whitelisted media/navigation commands, which are all replayed on the host machine.
+/// WebSocket (not HTTP) is used because mouse movement needs to stream at high frequency, and
+/// because the buttons otherwise had to re-derive the AES token for every single press.
+///
+/// Security model: the socket is authenticated once, up front, with the same token scheme as
+/// every HTTP endpoint. What it will do afterwards is limited to the message types handled in
+/// <see cref="HandleAsync"/> - notably, commands are looked up in the closed
+/// <see cref="RemoteCommands"/> set, so the socket offers no action the HTTP API did not
+/// already offer.
 /// </summary>
 public static class InputSocket
 {
@@ -28,13 +35,14 @@ public static class InputSocket
         string? Text = null,
         string? Key = null,
         string? Button = null,
+        string? Command = null,
         double? Dx = null,
         double? Dy = null,
         double? Delta = null);
 
     public static void RegisterInputSocketEndpoint(this WebApplication app)
     {
-        app.MapGet("/inputws", async (HttpContext context, IInputSimulator simulator, IConfiguration config) =>
+        app.MapGet("/inputws", async (HttpContext context, IInputSimulator simulator, RemoteCommandDispatcher commands, IConfiguration config) =>
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
@@ -69,7 +77,7 @@ public static class InputSocket
 
                     var msg = ParseMessage(raw);
                     if (msg is not null)
-                        await HandleAsync(simulator, msg);
+                        await HandleAsync(simulator, commands, webSocket, msg, ct);
                 }
 
                 await CloseQuietlyAsync(webSocket, WebSocketCloseStatus.NormalClosure, "bye");
@@ -126,8 +134,35 @@ public static class InputSocket
         }
     }
 
-    private static async Task HandleAsync(IInputSimulator sim, InputMessage m)
+    private static async Task HandleAsync(
+        IInputSimulator sim,
+        RemoteCommandDispatcher commands,
+        WebSocket webSocket,
+        InputMessage m,
+        CancellationToken ct)
     {
+        // Button presses. The name is resolved against the closed RemoteCommands set, so an
+        // unknown/forged name is a no-op rather than reaching an input backend - the socket
+        // accepts no action the HTTP API did not already accept. A failure is reported back to
+        // the UI instead of being swallowed, for the same reason the HTTP endpoints never
+        // swallowed injection errors: a button that silently does nothing is the bug where
+        // "the button says it worked but nothing happens".
+        if (m.Type == "command")
+        {
+            if (!RemoteCommands.TryParse(m.Command, out var command))
+                return;
+
+            try
+            {
+                await commands.ExecuteAsync(command);
+            }
+            catch (Exception ex) when (!IsClientDisconnect(ex))
+            {
+                await TrySendJsonAsync(webSocket, new { type = "commandError", command = m.Command, message = ex.Message }, ct);
+            }
+            return;
+        }
+
         try
         {
             switch (m.Type)
@@ -193,5 +228,21 @@ public static class InputSocket
     {
         var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(payload));
         await ws.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, ct);
+    }
+
+    /// <summary>
+    /// Best-effort notification. The client may already be gone by the time a command fails
+    /// (tab closed, phone lost wifi), and there is nobody left to tell, so a failed send here
+    /// must not turn into a logged fault.
+    /// </summary>
+    private static async Task TrySendJsonAsync(WebSocket ws, object payload, CancellationToken ct)
+    {
+        try
+        {
+            await SendJsonAsync(ws, payload, ct);
+        }
+        catch (Exception ex) when (IsClientDisconnect(ex))
+        {
+        }
     }
 }

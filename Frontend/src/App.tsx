@@ -17,10 +17,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import "./App.css";
-import {
-  postReqTo,
-  setAxiosClientPassword,
-} from "./services/useMediaControlApi";
 import { PiPlayPauseFill } from "react-icons/pi";
 import {
   MdOutlineSpaceBar,
@@ -32,14 +28,13 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import { FaVolumeDown, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { useRef, useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { AxiosError } from "axios";
 import { usePageHeightThreshold } from "./hooks/usePageHeightThreshold";
 import { usePageWidthThreshold } from "./hooks/usePageWidthThreshold";
 import InputPad from "./components/InputPad";
+import { useInputSocket } from "./services/useInputSocket";
 
 function App() {
-  const [errorState, setErrorState] = useState(null as Error | null);
-  const [password, setPassword] = useState(null as String | null);
+  const [password, setPassword] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const cancelRef = useRef<HTMLButtonElement | null>(null);
   const passwordInputRef = useRef<HTMLInputElement | null>(null);
@@ -48,34 +43,35 @@ function App() {
   const abovePageWidthThreshold = usePageWidthThreshold(window.innerHeight);
   const wideLayoutActive = !abovePageHeightThreshold && abovePageWidthThreshold;
 
-  const handleMediaApiReq = async (route: string) => {
-    postReqTo(
+  // Every button and the input pad share one authenticated socket, so a press is a single
+  // frame on an open connection instead of a request that re-derives the AES token first.
+  const socket = useInputSocket(password);
+
+  const handleMediaCommand = (route: string) => {
+    // The button names are camelCase ("volumeDown"); the wire names are the old HTTP route
+    // paths ("volume-down"), which is the set the server whitelists in RemoteCommands.cs.
+    socket.runCommand(
       route.replace(/[A-Z]/g, (match, offset) =>
         offset === 0 ? match.toLowerCase() : `-${match.toLowerCase()}`,
       ),
-    )
-      .then((res) => {
-        if (res instanceof Error) {
-          setErrorState(res);
-        } else {
-          setErrorState(null);
-        }
-      })
-      .catch((error) => {
-        setErrorState(error as Error);
-      });
+    );
   };
 
   const passwordSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setShowPassword(false);
-    setAxiosClientPassword(passwordInputRef.current?.value ?? null);
     setPassword(passwordInputRef.current?.value ?? null);
   };
 
+  const alertText = socket.error
+    ? `There seems to be a connection issue or the password was wrong! (${socket.error})`
+    : socket.commandError
+      ? `That button did not work: ${socket.commandError}`
+      : null;
+
   return (
     <>
-      {errorState && (
+      {alertText && (
         <Alert
           status="error"
           position={"absolute"}
@@ -83,12 +79,7 @@ function App() {
           zIndex={1}
         >
           <AlertIcon />
-          <AlertTitle>
-            {"There seems to be a connection issue or the password was wrong! " +
-              (errorState instanceof AxiosError
-                ? `Status code: ${(errorState as AxiosError).status}`
-                : "")}
-          </AlertTitle>
+          <AlertTitle>{alertText}</AlertTitle>
         </Alert>
       )}
 
@@ -159,7 +150,7 @@ function App() {
               paddingY={3}
               borderRadius={"50%"}
               height={"fit-content"}
-              onClick={() => handleMediaApiReq("volumeDown")}
+              onClick={() => handleMediaCommand("volumeDown")}
             >
               <FaVolumeDown size={40} />
             </Button>
@@ -167,7 +158,7 @@ function App() {
               paddingY={3}
               borderRadius={"50%"}
               height={"fit-content"}
-              onClick={() => handleMediaApiReq("volumeMute")}
+              onClick={() => handleMediaCommand("volumeMute")}
             >
               <FaVolumeMute size={40} />
             </Button>
@@ -175,7 +166,7 @@ function App() {
               paddingY={3}
               borderRadius={"50%"}
               height={"fit-content"}
-              onClick={() => handleMediaApiReq("volumeUp")}
+              onClick={() => handleMediaCommand("volumeUp")}
             >
               <FaVolumeUp size={40} />
             </Button>
@@ -189,7 +180,7 @@ function App() {
                 paddingY={3}
                 borderRadius={"50%"}
                 height={"fit-content"}
-                onClick={() => handleMediaApiReq("volumeDown")}
+                onClick={() => handleMediaCommand("volumeDown")}
               >
                 <FaVolumeDown size={40} />
               </Button>
@@ -197,7 +188,7 @@ function App() {
                 paddingY={3}
                 borderRadius={"50%"}
                 height={"fit-content"}
-                onClick={() => handleMediaApiReq("volumeMute")}
+                onClick={() => handleMediaCommand("volumeMute")}
               >
                 <FaVolumeMute size={40} />
               </Button>
@@ -205,7 +196,7 @@ function App() {
                 paddingY={3}
                 borderRadius={"50%"}
                 height={"fit-content"}
-                onClick={() => handleMediaApiReq("volumeUp")}
+                onClick={() => handleMediaCommand("volumeUp")}
               >
                 <FaVolumeUp size={40} />
               </Button>
@@ -219,7 +210,7 @@ function App() {
                   "path('m71.33294,25.46534c18.54259,-24.28296 -42.52553,-39.27983 -49.80353,-6.03608c-7.278,33.24375 -7.03236,47.11036 -0.61396,75.52821c6.4184,28.41785 66.59189,28.00932 49.08427,-0.32339c-17.50761,-28.33271 -17.20938,-44.88578 1.33321,-69.16874z')"
                 }
                 transform={"rotate(90deg) translate(10px)"}
-                onClick={() => handleMediaApiReq("arrowUp")}
+                onClick={() => handleMediaCommand("arrowUp")}
               >
                 <GrFormPrevious size={60} />
               </Button>
@@ -232,7 +223,7 @@ function App() {
                 clipPath={
                   "path('m71.33294,25.46534c18.54259,-24.28296 -42.52553,-39.27983 -49.80353,-6.03608c-7.278,33.24375 -7.03236,47.11036 -0.61396,75.52821c6.4184,28.41785 66.59189,28.00932 49.08427,-0.32339c-17.50761,-28.33271 -17.20938,-44.88578 1.33321,-69.16874z')"
                 }
-                onClick={() => handleMediaApiReq("arrowLeft")}
+                onClick={() => handleMediaCommand("arrowLeft")}
               >
                 <GrFormPrevious size={60} />
               </Button>
@@ -240,7 +231,7 @@ function App() {
                 width={"110px"}
                 height={"100px"}
                 borderRadius={"50%"}
-                onClick={() => handleMediaApiReq("space")}
+                onClick={() => handleMediaCommand("space")}
               >
                 <MdOutlineSpaceBar size={60} />
               </Button>
@@ -251,7 +242,7 @@ function App() {
                 clipPath={
                   "path('m9.04602,25.46534c-18.02519,-24.28296 41.33893,-39.27983 48.41385,-6.03608c7.07492,33.24375 6.83613,47.11036 0.59683,75.52821c-6.23931,28.41785 -64.73376,28.00932 -47.71466,-0.32339c17.01909,-28.33271 16.72918,-44.88578 -1.29601,-69.16874z')"
                 }
-                onClick={() => handleMediaApiReq("arrowRight")}
+                onClick={() => handleMediaCommand("arrowRight")}
               >
                 <GrFormNext size={60} />
               </Button>
@@ -262,7 +253,7 @@ function App() {
                 boxSize={"56px"}
                 borderRadius={"full"}
                 marginRight={"28px"}
-                onClick={() => handleMediaApiReq("escape")}
+                onClick={() => handleMediaCommand("escape")}
               >
                 Esc
               </Button>
@@ -273,7 +264,7 @@ function App() {
                   "path('m71.33294,25.46534c18.54259,-24.28296 -42.52553,-39.27983 -49.80353,-6.03608c-7.278,33.24375 -7.03236,47.11036 -0.61396,75.52821c6.4184,28.41785 66.59189,28.00932 49.08427,-0.32339c-17.50761,-28.33271 -17.20938,-44.88578 1.33321,-69.16874z')"
                 }
                 transform={"rotate(-90deg) translate(10px)"}
-                onClick={() => handleMediaApiReq("arrowDown")}
+                onClick={() => handleMediaCommand("arrowDown")}
               >
                 <GrFormPrevious size={60} />
               </Button>
@@ -281,7 +272,7 @@ function App() {
                 boxSize={"56px"}
                 borderRadius={"full"}
                 marginLeft={"28px"}
-                onClick={() => handleMediaApiReq("f11")}
+                onClick={() => handleMediaCommand("f11")}
               >
                 F11
               </Button>
@@ -291,21 +282,21 @@ function App() {
               <Button
                 height={"fit-content"}
                 borderRadius={"30%"}
-                onClick={() => handleMediaApiReq("previous")}
+                onClick={() => handleMediaCommand("previous")}
               >
                 <MdSkipPrevious size={40} />
               </Button>
               <Button
                 height={"fit-content"}
                 borderRadius={"30%"}
-                onClick={() => handleMediaApiReq("play")}
+                onClick={() => handleMediaCommand("play")}
               >
                 <PiPlayPauseFill size={40} />
               </Button>
               <Button
                 height={"fit-content"}
                 borderRadius={"30%"}
-                onClick={() => handleMediaApiReq("next")}
+                onClick={() => handleMediaCommand("next")}
               >
                 <MdSkipNext size={40} />
               </Button>
@@ -318,13 +309,13 @@ function App() {
               <Button
                 height={"fit-content"}
                 borderRadius={"30%"}
-                onClick={() => handleMediaApiReq("stop")}
+                onClick={() => handleMediaCommand("stop")}
               >
                 <MdStop size={40} />
               </Button>
             </VStack>
 
-            <InputPad password={String(password ?? "")} />
+            <InputPad socket={socket} />
 
             <Button
               margin={5}
@@ -343,7 +334,7 @@ function App() {
             <Button
               height={"fit-content"}
               borderRadius={"30%"}
-              onClick={() => handleMediaApiReq("stop")}
+              onClick={() => handleMediaCommand("stop")}
             >
               <MdStop size={40} />
             </Button>

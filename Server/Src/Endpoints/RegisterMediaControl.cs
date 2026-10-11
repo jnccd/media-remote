@@ -4,102 +4,40 @@ namespace Server.Endpoints;
 
 public static class MediaControl
 {
+    /// <summary>
+    /// HTTP transport for the media/navigation buttons. The UI drives these over the
+    /// WebSocket command channel now (see RegisterInputSocket), because a per-press request
+    /// meant re-deriving the AES token (PBKDF2, 100k iterations) before every button and
+    /// waiting for a fresh round trip. These routes are kept for clients that predate the
+    /// socket and stay authenticated per request by AuthMiddleware.
+    ///
+    /// Every route dispatches through <see cref="RemoteCommandDispatcher"/>, which is the
+    /// same path the socket uses, so this list can never expose an action the socket does
+    /// not (or vice versa).
+    /// </summary>
     public static void RegisterMediaControlEndpoints(this WebApplication app)
     {
-        // Media transport is routed through IMediaController (MPRIS on Linux,
-        // simulated media keys on Windows).
-        app.MapPost("/play", [CustomAuthorize] async (IMediaController media) =>
-        {
-            await media.PlayPauseAsync();
-            return Results.Ok();
-        });
-
-        app.MapPost("/next", [CustomAuthorize] async (IMediaController media) =>
-        {
-            await media.NextAsync();
-            return Results.Ok();
-        });
-
-        app.MapPost("/previous", [CustomAuthorize] async (IMediaController media) =>
-        {
-            await media.PreviousAsync();
-            return Results.Ok();
-        });
-
-        app.MapPost("/stop", [CustomAuthorize] async (IMediaController media) =>
-        {
-            await media.StopAsync();
-            return Results.Ok();
-        });
-
-        // Navigation keys are always raw injection (worked on every platform, regardless
-        // of whether a media player is present).
-        app.MapPost("/space", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Space);
-            return Results.Ok();
-        });
-
-        app.MapPost("/arrow-left", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Left);
-            return Results.Ok();
-        });
-
-        app.MapPost("/arrow-right", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Right);
-            return Results.Ok();
-        });
-
-        app.MapPost("/arrow-up", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Up);
-            return Results.Ok();
-        });
-
-        app.MapPost("/arrow-down", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Down);
-            return Results.Ok();
-        });
-
-        app.MapPost("/backspace", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Backspace);
-            return Results.Ok();
-        });
-
-        app.MapPost("/escape", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.Escape);
-            return Results.Ok();
-        });
-
-        app.MapPost("/f11", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.F11);
-            return Results.Ok();
-        });
-
-        // Volume is treated as system volume, so it stays as raw key injection
-        // (matching Windows behavior, where VK_VOLUME_* adjusts system volume).
-        app.MapPost("/volume-up", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.VolumeUp);
-            return Results.Ok();
-        });
-
-        app.MapPost("/volume-down", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.VolumeDown);
-            return Results.Ok();
-        });
-
-        app.MapPost("/volume-mute", [CustomAuthorize] async (IInputSimulator sim) =>
-        {
-            await sim.PressAsync(SimKey.VolumeMute);
-            return Results.Ok();
-        });
+        MapCommand(app, "/play", RemoteCommand.Play);
+        MapCommand(app, "/next", RemoteCommand.Next);
+        MapCommand(app, "/previous", RemoteCommand.Previous);
+        MapCommand(app, "/stop", RemoteCommand.Stop);
+        MapCommand(app, "/space", RemoteCommand.Space);
+        MapCommand(app, "/arrow-left", RemoteCommand.ArrowLeft);
+        MapCommand(app, "/arrow-right", RemoteCommand.ArrowRight);
+        MapCommand(app, "/arrow-up", RemoteCommand.ArrowUp);
+        MapCommand(app, "/arrow-down", RemoteCommand.ArrowDown);
+        MapCommand(app, "/backspace", RemoteCommand.Backspace);
+        MapCommand(app, "/escape", RemoteCommand.Escape);
+        MapCommand(app, "/f11", RemoteCommand.F11);
+        MapCommand(app, "/volume-up", RemoteCommand.VolumeUp);
+        MapCommand(app, "/volume-down", RemoteCommand.VolumeDown);
+        MapCommand(app, "/volume-mute", RemoteCommand.VolumeMute);
     }
+
+    private static void MapCommand(WebApplication app, string route, RemoteCommand command) =>
+        app.MapPost(route, [CustomAuthorize] async (RemoteCommandDispatcher commands) =>
+        {
+            await commands.ExecuteAsync(command);
+            return Results.Ok();
+        });
 }

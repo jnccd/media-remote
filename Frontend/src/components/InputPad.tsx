@@ -5,16 +5,16 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from "react";
 import { Box, Button, HStack, Input, Text, VStack } from "@chakra-ui/react";
-import { useInputSocket } from "../services/useInputSocket";
+import type { InputSocket } from "../services/useInputSocket";
 
 /**
  * General-purpose remote input: a touchpad whose pointer drags move the host mouse
  * (tap = left click, wheel = scroll), plus a short text box whose keystrokes are replayed
- * as letters/keys on the host. Uses the WebSocket channel for low latency.
+ * as letters/keys on the host. Shares the app's single WebSocket (see useInputSocket) so the
+ * buttons and the pad cannot end up on two different connections.
  */
-export default function InputPad({ password }: { password: string }) {
-  const { ready, error, moveMouse, click, scroll, typeText, pressKey } =
-    useInputSocket(password || null);
+export default function InputPad({ socket }: { socket: InputSocket }) {
+  const { ready, error, moveMouse, click, scroll, typeText, pressKey } = socket;
 
   const [text, setText] = useState("");
   const last = useRef({ x: 0, y: 0 });
