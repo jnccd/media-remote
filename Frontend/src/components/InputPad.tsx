@@ -23,7 +23,7 @@ export default function InputPad({ socket }: { socket: InputSocket }) {
   const pending = useRef({ dx: 0, dy: 0, raf: 0 as number | 0 });
 
   // Multiplier applied to the pointer delta before it's streamed to the host.
-  const SENSITIVITY = 1.5;
+  const SENSITIVITY = 3.0;
 
   const flush = () => {
     const p = pending.current;
