@@ -79,7 +79,7 @@ $serverDll = 'Server/bin/Release/net8.0/Server.dll'
 # unlike the shell script, which always runs as its own process, a .ps1 runs
 # inside the caller's session, so it would otherwise leave CI=true and a
 # MEDIA_CONTROL_SERVER pointing at this checkout behind in the user's prompt.
-$touchedVariables = @('CI', 'MEDIA_CONTROL_SERVER', 'MEDIA_CONTROL_SERVER_CWD', 'PORT')
+$touchedVariables = @('CI', 'MEDIA_CONTROL_SERVER', 'MEDIA_CONTROL_SERVER_CWD', 'PORT', 'TEMP', 'TMP')
 $previousValues = @{}
 foreach ($name in $touchedVariables) {
     $previousValues[$name] = [Environment]::GetEnvironmentVariable($name)
@@ -191,6 +191,21 @@ if (-not $SkipBuild) {
     }
 
     Write-Host 'media-remote: building the desktop wrapper from source'
+
+    # esbuild (which vite uses for transpiling) hands large payloads to its
+    # service process through temporary files in $env:TEMP and deletes each one
+    # immediately after it is read. In a temp folder whose permissions have been
+    # altered - which is what happens to %LOCALAPPDATA%\Temp once a sandboxed
+    # process has written there - those deletes fail and the frontend build dies
+    # with:
+    #   [vite:esbuild-transpile] remove C:\Users\...\Temp\esbuild-<hash>: Access is denied.
+    # So point the build's temporary files inside node_modules instead: always
+    # writable, already gitignored, and independent of what the system temp folder
+    # looks like. Restored on the way out along with the variables above.
+    $buildTemp = Join-Path $root 'Frontend/node_modules/.tmp'
+    New-Item -ItemType Directory -Force -Path $buildTemp | Out-Null
+    $env:TEMP = $buildTemp
+    $env:TMP = $buildTemp
 
     # The server csproj runs `pnpm i` for us on Release (its BuildFrontend target).
     # pnpm refuses to purge a stale node_modules when it has no TTY
